@@ -1,0 +1,22 @@
+{
+  "name": "vibecode-skills",
+  "owner": {
+    "name": "vibecode",
+    "email": ""
+  },
+  "metadata": {
+    "description": "Skills published by vibecode",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "vibecode-skills",
+      "description": "Skills published by vibecode including infrastructure and developer tools",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/cloudflare-tunnel"
+      ]
+    }
+  ]
+}
