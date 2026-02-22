@@ -16,7 +16,8 @@
       "strict": false,
       "skills": [
         "./skills/cloudflare-tunnel",
-        "./skills/paul-graham-style"
+        "./skills/paul-graham-style",
+        "./skills/bootstrap-fullstack-web-app"
       ]
     }
   ]
