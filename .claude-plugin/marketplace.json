@@ -15,7 +15,8 @@
       "source": "./",
       "strict": false,
       "skills": [
-        "./skills/cloudflare-tunnel"
+        "./skills/cloudflare-tunnel",
+        "./skills/paul-graham-style"
       ]
     }
   ]
