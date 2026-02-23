@@ -20,10 +20,25 @@ HTTP_PIDS=()
 TEST_HOME=$(mktemp -d)
 export HOME="$TEST_HOME"
 
+# Lower the concurrent limit for testing
+export TUNNEL_MAX_CONCURRENT=2
+
 # Ports we'll use (pick high ports unlikely to conflict)
 PORT_A=18771
 PORT_B=18772
 PORT_C=18773
+
+# --- Prerequisite checks ---
+
+if ! command -v tmux &>/dev/null; then
+  echo "ERROR: tmux is required but not installed."
+  exit 1
+fi
+
+if ! command -v cloudflared &>/dev/null; then
+  echo "ERROR: cloudflared is required but not installed."
+  exit 1
+fi
 
 start_http_server() {
   local port="$1"
@@ -43,8 +58,14 @@ stop_http_servers() {
 cleanup() {
   echo ""
   echo "Cleaning up..."
-  # Stop all tunnels
+  # Stop all tunnels (handles tmux sessions and state files)
   bash "$TUNNEL_SH" stop > /dev/null 2>&1 || true
+  # Kill any lingering cftunnel tmux sessions from tests
+  for session in $(tmux list-sessions -F '#{session_name}' 2>/dev/null || true); do
+    if [[ "$session" == cftunnel-* ]]; then
+      tmux kill-session -t "$session" 2>/dev/null || true
+    fi
+  done
   stop_http_servers
   rm -rf "$TEST_HOME"
   echo "Done."
@@ -54,6 +75,12 @@ trap cleanup EXIT
 reset_state() {
   # Stop any running tunnels and HTTP servers from previous test
   bash "$TUNNEL_SH" stop > /dev/null 2>&1 || true
+  # Kill any lingering cftunnel tmux sessions
+  for session in $(tmux list-sessions -F '#{session_name}' 2>/dev/null || true); do
+    if [[ "$session" == cftunnel-* ]]; then
+      tmux kill-session -t "$session" 2>/dev/null || true
+    fi
+  done
   stop_http_servers
   rm -rf "${TEST_HOME}/.cloudflare-tunnels"
 }
@@ -137,7 +164,14 @@ test_help() {
   assert_contains "$out" "Usage: tunnel.sh" "help shows usage" &&
   assert_contains "$out" "start" "help shows start" &&
   assert_contains "$out" "stop" "help shows stop" &&
-  assert_contains "$out" "list" "help shows list"
+  assert_contains "$out" "list" "help shows list" &&
+  assert_contains "$out" "gc" "help shows gc"
+}
+
+test_help_shows_ttl() {
+  local out
+  out=$(bash "$TUNNEL_SH" help)
+  assert_contains "$out" "--ttl" "help shows --ttl"
 }
 
 test_unknown_command() {
@@ -165,6 +199,13 @@ test_start_unknown_option() {
   out=$(bash "$TUNNEL_SH" start 8080 --bogus 2>&1) || code=$?
   assert_exit_code "$code" "1" &&
   assert_contains "$out" "Unknown option: --bogus" "unknown option"
+}
+
+test_start_invalid_ttl() {
+  local out code=0
+  out=$(bash "$TUNNEL_SH" start 8080 --ttl "banana" 2>&1) || code=$?
+  assert_exit_code "$code" "1" &&
+  assert_contains "$out" "Invalid TTL" "invalid ttl"
 }
 
 test_list_empty() {
@@ -221,6 +262,19 @@ test_pid_dir_created_automatically() {
   [[ -d "${TEST_HOME}/.cloudflare-tunnels" ]]
 }
 
+test_gc_nothing_to_clean() {
+  local out
+  out=$(bash "$TUNNEL_SH" gc)
+  assert_contains "$out" "Running garbage collection" "gc header" &&
+  assert_contains "$out" "No orphans found" "gc clean"
+}
+
+test_cleanup_alias() {
+  local out
+  out=$(bash "$TUNNEL_SH" cleanup)
+  assert_contains "$out" "Running garbage collection" "cleanup alias"
+}
+
 # ==================== Stale PID tests (no real tunnel needed) ====================
 
 test_list_cleans_stale() {
@@ -267,6 +321,31 @@ test_stale_pid_on_start_gets_cleaned() {
   assert_not_contains "$out" "already running" "not duplicate"
 }
 
+test_gc_orphaned_tmux_session() {
+  # Create an orphaned tmux session matching our prefix
+  tmux new-session -d -s "cftunnel-55555" "sleep 300" 2>/dev/null || true
+  sleep 0.3
+
+  local out
+  out=$(bash "$TUNNEL_SH" gc)
+  assert_contains "$out" "Killing orphaned tmux session: cftunnel-55555" "gc kills orphan" &&
+  ! tmux has-session -t "cftunnel-55555" 2>/dev/null
+}
+
+test_gc_orphaned_state_files() {
+  mkdir -p "${TEST_HOME}/.cloudflare-tunnels"
+  echo "99999999" > "${TEST_HOME}/.cloudflare-tunnels/tunnel-6666.pid"
+  echo "https://orphan.trycloudflare.com" > "${TEST_HOME}/.cloudflare-tunnels/tunnel-6666.url"
+  echo "forever" > "${TEST_HOME}/.cloudflare-tunnels/tunnel-6666.ttl"
+
+  local out
+  out=$(bash "$TUNNEL_SH" gc)
+  assert_contains "$out" "Removing orphaned state files for port 6666" "gc cleans state" &&
+  [[ ! -f "${TEST_HOME}/.cloudflare-tunnels/tunnel-6666.pid" ]] &&
+  [[ ! -f "${TEST_HOME}/.cloudflare-tunnels/tunnel-6666.url" ]] &&
+  [[ ! -f "${TEST_HOME}/.cloudflare-tunnels/tunnel-6666.ttl" ]]
+}
+
 # ==================== Real tunnel tests ====================
 
 test_start_real_tunnel() {
@@ -275,7 +354,9 @@ test_start_real_tunnel() {
   out=$(bash "$TUNNEL_SH" start "$PORT_A")
   assert_contains "$out" "Starting tunnel to http://localhost:${PORT_A}" "start msg" &&
   assert_contains "$out" "trycloudflare.com" "got URL" &&
-  assert_contains "$out" "Port: ${PORT_A}" "port"
+  assert_contains "$out" "Port: ${PORT_A}" "port" &&
+  assert_contains "$out" "Session: cftunnel-${PORT_A}" "session" &&
+  assert_contains "$out" "TTL: 2h" "default ttl"
 }
 
 test_start_real_tunnel_is_reachable() {
@@ -293,6 +374,22 @@ test_start_real_tunnel_is_reachable() {
   assert_url_reachable "$url" "tunnel reachable"
 }
 
+test_start_with_explicit_ttl() {
+  start_http_server "$PORT_A"
+  local out
+  out=$(bash "$TUNNEL_SH" start "$PORT_A" --ttl 1h)
+  assert_contains "$out" "TTL: 1h" "explicit ttl" &&
+  assert_contains "$out" "trycloudflare.com" "got URL"
+}
+
+test_start_with_forever_ttl() {
+  start_http_server "$PORT_A"
+  local out
+  out=$(bash "$TUNNEL_SH" start "$PORT_A" --ttl forever)
+  assert_contains "$out" "TTL: forever" "forever ttl" &&
+  assert_contains "$out" "trycloudflare.com" "got URL"
+}
+
 test_start_duplicate_real_tunnel() {
   start_http_server "$PORT_A"
   bash "$TUNNEL_SH" start "$PORT_A" > /dev/null 2>&1
@@ -300,7 +397,8 @@ test_start_duplicate_real_tunnel() {
   local out
   out=$(bash "$TUNNEL_SH" start "$PORT_A")
   assert_contains "$out" "Tunnel already running on port ${PORT_A}" "duplicate warning" &&
-  assert_contains "$out" "URL:" "shows URL"
+  assert_contains "$out" "URL:" "shows URL" &&
+  assert_contains "$out" "Session:" "shows session"
 }
 
 test_start_multiple_real_tunnels() {
@@ -319,6 +417,30 @@ test_start_multiple_real_tunnels() {
   assert_contains "$list_out" "Port ${PORT_B}" "list B"
 }
 
+test_concurrent_limit() {
+  # TUNNEL_MAX_CONCURRENT=2, so third tunnel should be rejected
+  start_http_server "$PORT_A"
+  start_http_server "$PORT_B"
+  start_http_server "$PORT_C"
+
+  bash "$TUNNEL_SH" start "$PORT_A" > /dev/null 2>&1
+  bash "$TUNNEL_SH" start "$PORT_B" > /dev/null 2>&1
+
+  local out code=0
+  out=$(bash "$TUNNEL_SH" start "$PORT_C" 2>&1) || code=$?
+  assert_exit_code "$code" "1" &&
+  assert_contains "$out" "Maximum of 2 concurrent tunnels reached" "limit msg" &&
+  assert_contains "$out" "Stop a tunnel first" "stop hint"
+}
+
+test_tmux_session_exists() {
+  start_http_server "$PORT_A"
+  bash "$TUNNEL_SH" start "$PORT_A" > /dev/null 2>&1
+
+  # Verify the tmux session exists
+  tmux has-session -t "cftunnel-${PORT_A}" 2>/dev/null
+}
+
 test_list_real_active() {
   start_http_server "$PORT_A"
   bash "$TUNNEL_SH" start "$PORT_A" > /dev/null 2>&1
@@ -326,7 +448,9 @@ test_list_real_active() {
   local out
   out=$(bash "$TUNNEL_SH" list)
   assert_contains "$out" "Port ${PORT_A}" "list port" &&
-  assert_contains "$out" "trycloudflare.com" "list URL"
+  assert_contains "$out" "trycloudflare.com" "list URL" &&
+  assert_contains "$out" "Session cftunnel-${PORT_A}" "list session" &&
+  assert_contains "$out" "TTL" "list TTL"
 }
 
 test_status_real_running() {
@@ -337,7 +461,9 @@ test_status_real_running() {
   out=$(bash "$TUNNEL_SH" status "$PORT_A")
   assert_contains "$out" "Tunnel on port ${PORT_A} is running" "status running" &&
   assert_contains "$out" "PID:" "PID" &&
-  assert_contains "$out" "URL:" "URL"
+  assert_contains "$out" "URL:" "URL" &&
+  assert_contains "$out" "Session:" "Session" &&
+  assert_contains "$out" "TTL:" "TTL"
 }
 
 test_stop_real_tunnel() {
@@ -347,7 +473,8 @@ test_stop_real_tunnel() {
   local out
   out=$(bash "$TUNNEL_SH" stop "$PORT_A")
   assert_contains "$out" "Stopped tunnel on port ${PORT_A}" "stopped" &&
-  [[ ! -f "${TEST_HOME}/.cloudflare-tunnels/tunnel-${PORT_A}.pid" ]]
+  [[ ! -f "${TEST_HOME}/.cloudflare-tunnels/tunnel-${PORT_A}.pid" ]] &&
+  ! tmux has-session -t "cftunnel-${PORT_A}" 2>/dev/null
 }
 
 test_stop_all_real_tunnels() {
@@ -359,7 +486,9 @@ test_stop_all_real_tunnels() {
   local out
   out=$(bash "$TUNNEL_SH" stop)
   assert_contains "$out" "Stopped tunnel on port ${PORT_A}" "stop A" &&
-  assert_contains "$out" "Stopped tunnel on port ${PORT_B}" "stop B"
+  assert_contains "$out" "Stopped tunnel on port ${PORT_B}" "stop B" &&
+  ! tmux has-session -t "cftunnel-${PORT_A}" 2>/dev/null &&
+  ! tmux has-session -t "cftunnel-${PORT_B}" 2>/dev/null
 }
 
 test_stop_then_restart_real() {
@@ -421,14 +550,17 @@ echo "  tunnel.sh test suite (REAL tunnels)"
 echo "========================================="
 echo ""
 echo "  Using ports: ${PORT_A}, ${PORT_B}, ${PORT_C}"
+echo "  Concurrent limit: ${TUNNEL_MAX_CONCURRENT}"
 echo ""
 
 echo "--- CLI basics (fast) ---"
 run_test "help command"                        test_help
+run_test "help shows --ttl"                    test_help_shows_ttl
 run_test "unknown command"                     test_unknown_command
 run_test "no args shows help"                  test_no_args_shows_help
 run_test "start missing port"                  test_start_missing_port
 run_test "start unknown option"                test_start_unknown_option
+run_test "start invalid TTL"                   test_start_invalid_ttl
 run_test "list empty"                          test_list_empty
 run_test "status not found"                    test_status_not_found
 run_test "status missing port"                 test_status_missing_port
@@ -437,20 +569,28 @@ run_test "stop all (none running)"             test_stop_all_empty
 run_test "logs not found"                      test_logs_not_found
 run_test "logs missing port"                   test_logs_missing_port
 run_test "PID dir auto-created"                test_pid_dir_created_automatically
+run_test "gc nothing to clean"                 test_gc_nothing_to_clean
+run_test "cleanup alias works"                 test_cleanup_alias
 
 echo ""
-echo "--- Stale PID handling ---"
+echo "--- Stale PID / orphan handling ---"
 run_test "list cleans stale PIDs"              test_list_cleans_stale
 run_test "status stale PID"                    test_status_stale_pid
 run_test "stop stale PID"                      test_stop_stale_pid
 run_test "stale PID cleaned on start"          test_stale_pid_on_start_gets_cleaned
+run_test "gc orphaned tmux session"            test_gc_orphaned_tmux_session
+run_test "gc orphaned state files"             test_gc_orphaned_state_files
 
 echo ""
 echo "--- Real tunnel operations (slower) ---"
 run_test "start real tunnel"                   test_start_real_tunnel
 run_test "tunnel is reachable via URL"         test_start_real_tunnel_is_reachable
+run_test "start with explicit TTL"             test_start_with_explicit_ttl
+run_test "start with forever TTL"              test_start_with_forever_ttl
 run_test "start duplicate (warns)"             test_start_duplicate_real_tunnel
 run_test "start multiple tunnels"              test_start_multiple_real_tunnels
+run_test "concurrent limit enforced"           test_concurrent_limit
+run_test "tmux session exists"                 test_tmux_session_exists
 run_test "list active tunnels"                 test_list_real_active
 run_test "status running tunnel"               test_status_real_running
 run_test "stop specific tunnel"                test_stop_real_tunnel
