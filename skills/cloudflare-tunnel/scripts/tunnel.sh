@@ -381,10 +381,22 @@ cmd_gc() {
   echo "Running garbage collection..."
   local cleaned=0
 
-  # 1. Clean up tracked tunnels with dead sessions/processes
-  _cleanup_stale
+  # 1. Clean up stale state files (tmux session or process is dead)
+  for pid_file in "${TUNNEL_STATE_DIR}"/tunnel-*.pid; do
+    [[ -f "$pid_file" ]] || continue
+    local p
+    p=$(basename "$pid_file" .pid)
+    local port="${p#tunnel-}"
+    local pid
+    pid=$(cat "$pid_file")
+    if ! _tmux_session_exists "$port" || ! kill -0 "$pid" 2>/dev/null; then
+      echo "  Removing stale tunnel state for port ${port}"
+      _force_cleanup "$port"
+      cleaned=$((cleaned + 1))
+    fi
+  done
 
-  # 2. Find orphaned tmux sessions matching our prefix
+  # 2. Find orphaned tmux sessions matching our prefix but not tracked in state
   local sessions
   sessions=$(tmux list-sessions -F '#{session_name}' 2>/dev/null || true)
   while IFS= read -r session; do
@@ -399,43 +411,42 @@ cmd_gc() {
     fi
   done <<< "$sessions"
 
-  # 3. Find orphaned cloudflared processes not tracked in state
+  # 3. Find orphaned cloudflared processes running inside our tmux sessions
+  #    but not tracked in state. Only targets processes whose parent is a
+  #    cftunnel-* tmux session to avoid killing unrelated cloudflared instances.
   local tracked_pids=()
   for pid_file in "${TUNNEL_STATE_DIR}"/tunnel-*.pid; do
     [[ -f "$pid_file" ]] || continue
     tracked_pids+=("$(cat "$pid_file")")
   done
 
-  while IFS= read -r pid; do
-    [[ -n "$pid" ]] || continue
-    local is_tracked=false
-    for tp in "${tracked_pids[@]+"${tracked_pids[@]}"}"; do
-      if [[ "$tp" == "$pid" ]]; then
-        is_tracked=true
-        break
-      fi
-    done
-    if [[ "$is_tracked" == false ]]; then
-      echo "  Killing orphaned cloudflared process: PID ${pid}"
-      kill "$pid" 2>/dev/null || true
-      cleaned=$((cleaned + 1))
+  # Get PIDs of processes inside our tmux sessions
+  local tmux_sessions
+  tmux_sessions=$(tmux list-sessions -F '#{session_name}' 2>/dev/null || true)
+  while IFS= read -r session; do
+    [[ -n "$session" ]] || continue
+    if [[ "$session" == "${TMUX_PREFIX}-"* ]]; then
+      local pane_pid
+      pane_pid=$(tmux list-panes -t "$session" -F '#{pane_pid}' 2>/dev/null || true)
+      [[ -n "$pane_pid" ]] || continue
+      # Check children of the pane shell for cloudflared
+      while IFS= read -r child_pid; do
+        [[ -n "$child_pid" ]] || continue
+        local is_tracked=false
+        for tp in "${tracked_pids[@]+"${tracked_pids[@]}"}"; do
+          if [[ "$tp" == "$child_pid" ]]; then
+            is_tracked=true
+            break
+          fi
+        done
+        if [[ "$is_tracked" == false ]]; then
+          echo "  Killing orphaned cloudflared process: PID ${child_pid} (session: ${session})"
+          kill "$child_pid" 2>/dev/null || true
+          cleaned=$((cleaned + 1))
+        fi
+      done < <(pgrep -P "$pane_pid" -f 'cloudflared' 2>/dev/null || true)
     fi
-  done < <(pgrep -f 'cloudflared tunnel' 2>/dev/null || true)
-
-  # 4. Clean up orphaned state files (PID exists in state but process is dead)
-  for state_file in "${TUNNEL_STATE_DIR}"/tunnel-*.pid; do
-    [[ -f "$state_file" ]] || continue
-    local pid
-    pid=$(cat "$state_file")
-    if ! kill -0 "$pid" 2>/dev/null; then
-      local p
-      p=$(basename "$state_file" .pid)
-      local port="${p#tunnel-}"
-      echo "  Removing orphaned state files for port ${port}"
-      _force_cleanup "$port"
-      cleaned=$((cleaned + 1))
-    fi
-  done
+  done <<< "$tmux_sessions"
 
   if [[ $cleaned -eq 0 ]]; then
     echo "No orphans found. Everything is clean."

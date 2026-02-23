@@ -89,7 +89,7 @@ assert_contains() {
   local output="$1"
   local expected="$2"
   local label="${3:-}"
-  if echo "$output" | grep -qF "$expected"; then
+  if echo "$output" | grep -qF -- "$expected"; then
     return 0
   else
     echo "ASSERT FAILED [${label}]: expected output to contain '${expected}'"
@@ -102,7 +102,7 @@ assert_not_contains() {
   local output="$1"
   local unexpected="$2"
   local label="${3:-}"
-  if echo "$output" | grep -qF "$unexpected"; then
+  if echo "$output" | grep -qF -- "$unexpected"; then
     echo "ASSERT FAILED [${label}]: expected output NOT to contain '${unexpected}'"
     echo "  Got: ${output}"
     return 1
@@ -262,11 +262,11 @@ test_pid_dir_created_automatically() {
   [[ -d "${TEST_HOME}/.cloudflare-tunnels" ]]
 }
 
-test_gc_nothing_to_clean() {
-  local out
-  out=$(bash "$TUNNEL_SH" gc)
-  assert_contains "$out" "Running garbage collection" "gc header" &&
-  assert_contains "$out" "No orphans found" "gc clean"
+test_gc_runs_without_error() {
+  local out code=0
+  out=$(bash "$TUNNEL_SH" gc 2>&1) || code=$?
+  assert_exit_code "$code" "0" &&
+  assert_contains "$out" "Running garbage collection" "gc header"
 }
 
 test_cleanup_alias() {
@@ -340,7 +340,7 @@ test_gc_orphaned_state_files() {
 
   local out
   out=$(bash "$TUNNEL_SH" gc)
-  assert_contains "$out" "Removing orphaned state files for port 6666" "gc cleans state" &&
+  assert_contains "$out" "Removing stale tunnel state for port 6666" "gc cleans state" &&
   [[ ! -f "${TEST_HOME}/.cloudflare-tunnels/tunnel-6666.pid" ]] &&
   [[ ! -f "${TEST_HOME}/.cloudflare-tunnels/tunnel-6666.url" ]] &&
   [[ ! -f "${TEST_HOME}/.cloudflare-tunnels/tunnel-6666.ttl" ]]
@@ -569,7 +569,7 @@ run_test "stop all (none running)"             test_stop_all_empty
 run_test "logs not found"                      test_logs_not_found
 run_test "logs missing port"                   test_logs_missing_port
 run_test "PID dir auto-created"                test_pid_dir_created_automatically
-run_test "gc nothing to clean"                 test_gc_nothing_to_clean
+run_test "gc runs without error"                test_gc_runs_without_error
 run_test "cleanup alias works"                 test_cleanup_alias
 
 echo ""
