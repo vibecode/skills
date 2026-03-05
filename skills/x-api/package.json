@@ -1,0 +1,10 @@
+{
+  "name": "x-api",
+  "scripts": {
+    "xcli": "bun run scripts/xcli/xcli.ts",
+    "test": "bun test scripts/xcli/"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.3.10"
+  }
+}
