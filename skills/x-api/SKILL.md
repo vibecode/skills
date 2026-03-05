@@ -1,6 +1,6 @@
 ---
 name: x-api
-description: "The X (Twitter) API v2 — Bearer Token (App-Only) endpoints only. Use when working with the X API, Twitter API, or when the user needs to search tweets, look up tweets/users, access timelines, filtered streams, spaces, lists, trends, or any read-only X API operation. This skill covers all endpoints that use OAuth 2.0 App-Only (Bearer Token) authentication. Triggers: X API, Twitter API, tweet search, tweet lookup, user lookup, filtered stream, sampled stream, spaces, lists, trends, compliance jobs."
+description: "The X (Twitter) API v2 — Bearer Token (App-Only) endpoints only. Use when working with the X API, Twitter API, or when the user needs to search tweets, look up tweets/users, access timelines, filtered streams, spaces, lists, trends, or any read-only X API operation. This skill covers all endpoints that use OAuth 2.0 App-Only (Bearer Token) authentication. Triggers: X API, Twitter API, tweet search, tweet lookup, user lookup, filtered stream, sampled stream, spaces, lists, trends, compliance jobs. Do NOT use for posting tweets, liking, retweeting, bookmarking, sending DMs, following/unfollowing, or any write operations — those require user-context auth not covered by this skill."
 ---
 
 # X API v2 — Bearer Token (App-Only)
@@ -14,7 +14,7 @@ Bearer Token auth = **read-only access to public data**. Cannot post, like, retw
 
 ### Getting a Bearer Token
 
-If the user doesn't have a Bearer Token yet:
+If `X_BEARER_TOKEN` is not set, instruct the user to:
 
 1. Go to https://console.x.com/ and log in with their X account
 2. Click **"Apps"** in the sidebar
