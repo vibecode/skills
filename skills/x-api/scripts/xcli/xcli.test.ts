@@ -1,5 +1,5 @@
 import { describe, test, expect } from "bun:test";
-import { fieldParams } from "./api";
+import { fieldParams, applyFieldPreset } from "./api";
 
 const XCLI = `${import.meta.dir}/xcli.ts`;
 
@@ -63,6 +63,48 @@ describe("fieldParams", () => {
 });
 
 // ---------------------------------------------------------------------------
+// Unit: applyFieldPreset
+// ---------------------------------------------------------------------------
+describe("applyFieldPreset", () => {
+  test("expands tweets:full preset", () => {
+    const params: Record<string, string> = {};
+    applyFieldPreset("tweets", "full", params);
+    expect(params["tweet.fields"]).toContain("author_id");
+    expect(params["tweet.fields"]).toContain("created_at");
+    expect(params["tweet.fields"]).toContain("public_metrics");
+    expect(params["user.fields"]).toContain("username");
+    expect(params.expansions).toContain("author_id");
+    expect(params["media.fields"]).toContain("url");
+  });
+
+  test("expands users:full preset", () => {
+    const params: Record<string, string> = {};
+    applyFieldPreset("users", "full", params);
+    expect(params["user.fields"]).toContain("public_metrics");
+    expect(params["user.fields"]).toContain("description");
+    expect(params["user.fields"]).toContain("location");
+  });
+
+  test("does not overwrite explicit flags", () => {
+    const params: Record<string, string> = {
+      "tweet.fields": "text",
+    };
+    applyFieldPreset("tweets", "full", params);
+    // Explicit value should be preserved
+    expect(params["tweet.fields"]).toBe("text");
+    // Other preset fields should be added
+    expect(params["user.fields"]).toContain("username");
+  });
+
+  test("dies on unknown preset", async () => {
+    // applyFieldPreset calls die() which does process.exit(1), so test via subprocess
+    const r = await run("tweets", "search", "test", "--fields", "bogus");
+    expect(r.exitCode).not.toBe(0);
+    expect(r.stderr).toContain("Unknown field preset");
+  });
+});
+
+// ---------------------------------------------------------------------------
 // CLI: arg parsing & usage
 // ---------------------------------------------------------------------------
 describe("cli basics", () => {
@@ -70,7 +112,7 @@ describe("cli basics", () => {
     const r = await run();
     expect(r.exitCode).toBe(1);
     expect(r.stderr).toContain("Usage: xcli");
-    expect(r.stderr).toContain("Resources:");
+    expect(r.stderr).toContain("Examples:");
     expect(r.stdout).toBe("");
   });
 
@@ -84,6 +126,46 @@ describe("cli basics", () => {
     const r = await run("tweets", "bogus-action");
     expect(r.exitCode).not.toBe(0);
     expect(r.stderr).toContain("Unknown tweets action");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// CLI: --help flag
+// ---------------------------------------------------------------------------
+describe("help", () => {
+  test("--help exits 0 with usage", async () => {
+    const r = await run("--help");
+    expect(r.exitCode).toBe(0);
+    expect(r.stderr).toContain("Examples:");
+    expect(r.stderr).toContain("Usage: xcli");
+  });
+
+  test("-h exits 0", async () => {
+    const r = await run("-h");
+    expect(r.exitCode).toBe(0);
+    expect(r.stderr).toContain("Examples:");
+  });
+
+  test("resource --help shows resource help", async () => {
+    const r = await run("tweets", "--help");
+    expect(r.exitCode).toBe(0);
+    expect(r.stderr).toContain("xcli tweets");
+    expect(r.stderr).toContain("Examples:");
+    expect(r.stderr).toContain("search");
+  });
+
+  test("resource -h shows resource help", async () => {
+    const r = await run("users", "-h");
+    expect(r.exitCode).toBe(0);
+    expect(r.stderr).toContain("xcli users");
+    expect(r.stderr).toContain("by-username");
+  });
+
+  test("boolean flags don't consume next arg", async () => {
+    // --help should not eat "tweets" as its value
+    const r = await run("tweets", "--help");
+    expect(r.exitCode).toBe(0);
+    expect(r.stderr).not.toContain("Unknown");
   });
 });
 
@@ -315,8 +397,17 @@ describe("compliance", () => {
 // Output format
 // ---------------------------------------------------------------------------
 describe("output format", () => {
-  test("stdout is valid pretty-printed JSON", async () => {
+  test("stdout is compact JSON by default", async () => {
     const r = await run("usage");
+    expect(r.exitCode).toBe(0);
+    const parsed = JSON.parse(r.stdout.trim());
+    // Compact = single line (no newlines within the JSON itself)
+    expect(r.stdout.trim()).toBe(JSON.stringify(parsed));
+  });
+
+  test("--pretty outputs indented JSON", async () => {
+    const r = await run("usage", "--pretty");
+    expect(r.exitCode).toBe(0);
     const parsed = JSON.parse(r.stdout);
     expect(r.stdout).toContain("\n");
     expect(r.stdout).toContain("  ");
@@ -328,5 +419,31 @@ describe("output format", () => {
     expect(r.exitCode).not.toBe(0);
     expect(r.stdout).toBe("");
     expect(r.stderr.length).toBeGreaterThan(0);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// --fields preset (live API)
+// ---------------------------------------------------------------------------
+describe("--fields preset", () => {
+  test("--fields full expands tweet fields", async () => {
+    const data = await json(
+      "tweets", "search", "from:vibecodeapp",
+      "--max-results", "10",
+      "--fields", "full",
+    );
+    expect(data.data).toBeArray();
+    expect(data.data[0].author_id).toBeString();
+    expect(data.data[0].created_at).toBeString();
+    expect(data.includes).toBeDefined();
+  });
+
+  test("--fields full expands user fields", async () => {
+    const data = await json(
+      "users", "by-username", VC_USERNAME,
+      "--fields", "full",
+    );
+    expect(data.data.public_metrics).toBeDefined();
+    expect(data.data.description).toBeString();
   });
 });

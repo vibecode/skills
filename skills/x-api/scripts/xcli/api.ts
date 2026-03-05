@@ -24,10 +24,10 @@ type RequestOpts = {
 };
 
 /**
- * Make a REST API call and print the JSON response to stdout.
+ * Make a REST API call and return the parsed JSON response.
  * On 429, reports when the rate limit resets. Other errors go to stderr.
  */
-export async function request(opts: RequestOpts): Promise<void> {
+export async function request(opts: RequestOpts): Promise<unknown> {
   const url = new URL(`${BASE}${opts.path}`);
   if (opts.params) {
     for (const [k, v] of Object.entries(opts.params)) {
@@ -53,8 +53,57 @@ export async function request(opts: RequestOpts): Promise<void> {
     const text = await res.text();
     die(`HTTP ${res.status}: ${text}`);
   }
-  const json = await res.json();
-  console.log(JSON.stringify(json, null, 2));
+  return await res.json();
+}
+
+/** Format data as JSON string. Compact by default, indented with pretty=true. */
+export function formatOutput(data: unknown, pretty: boolean): string {
+  return pretty ? JSON.stringify(data, null, 2) : JSON.stringify(data);
+}
+
+/**
+ * Field presets for common expansions. Keyed by "resource:preset".
+ * Only "full" preset for now. Returns params to merge into the request.
+ */
+const FIELD_PRESETS: Record<string, Record<string, string>> = {
+  "tweets:full": {
+    "tweet.fields": "author_id,created_at,public_metrics,entities,conversation_id,lang,referenced_tweets,context_annotations",
+    "user.fields": "created_at,description,public_metrics,profile_image_url,username,verified,verified_type",
+    "media.fields": "url,preview_image_url,type,alt_text,duration_ms,height,width,public_metrics,variants",
+    expansions: "author_id,referenced_tweets.id,attachments.media_keys",
+  },
+  "users:full": {
+    "user.fields": "created_at,description,public_metrics,profile_image_url,username,verified,verified_type,location",
+  },
+  "spaces:full": {
+    "space.fields": "created_at,host_ids,lang,participant_count,scheduled_start,speaker_ids,state,title,topic_ids,updated_at",
+    expansions: "creator_id",
+    "user.fields": "created_at,description,public_metrics,profile_image_url,username,verified",
+  },
+  "lists:full": {
+    "list.fields": "created_at,description,follower_count,member_count,owner_id,private",
+    expansions: "owner_id",
+    "user.fields": "created_at,description,public_metrics,profile_image_url,username,verified",
+  },
+};
+
+/**
+ * Apply a field preset to params. Explicit flags take precedence (no overwrite).
+ * Dies on unknown preset.
+ */
+export function applyFieldPreset(
+  resource: string,
+  preset: string,
+  params: Record<string, string>,
+): void {
+  const key = `${resource}:${preset}`;
+  const presetParams = FIELD_PRESETS[key];
+  if (!presetParams) die(`Unknown field preset: ${key}`);
+  for (const [k, v] of Object.entries(presetParams!)) {
+    if (!(k in params)) {
+      params[k] = v;
+    }
+  }
 }
 
 /**

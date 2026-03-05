@@ -9,7 +9,7 @@ import type { ParsedArgs } from "./types";
  * Comma-separated IDs auto-switch between single and multi endpoints.
  * Search/count endpoints remap --page-token to next_token (X API quirk).
  */
-export async function handleTweets(args: ParsedArgs): Promise<void> {
+export async function handleTweets(args: ParsedArgs): Promise<unknown> {
   const { action, positional: pos, flags } = args;
   const params = fieldParams(flags);
 
@@ -110,7 +110,7 @@ export async function handleTweets(args: ParsedArgs): Promise<void> {
  * connect/sample/sample10 use the streaming client (long-lived connection).
  * rules-add/rules-delete use POST requests.
  */
-export async function handleStreams(args: ParsedArgs): Promise<void> {
+export async function handleStreams(args: ParsedArgs): Promise<unknown> {
   const { action, flags } = args;
   const params = fieldParams(flags);
 
@@ -154,7 +154,7 @@ export async function handleStreams(args: ParsedArgs): Promise<void> {
  * Users: lookup by ID or username, search, followers, following.
  * Comma-separated values auto-switch between single and multi endpoints.
  */
-export async function handleUsers(args: ParsedArgs): Promise<void> {
+export async function handleUsers(args: ParsedArgs): Promise<unknown> {
   const { action, positional: pos, flags } = args;
   const params = fieldParams(flags);
 
@@ -199,7 +199,7 @@ export async function handleUsers(args: ParsedArgs): Promise<void> {
 }
 
 /** Spaces: lookup, search, by-creator, tweets shared in a space. */
-export async function handleSpaces(args: ParsedArgs): Promise<void> {
+export async function handleSpaces(args: ParsedArgs): Promise<unknown> {
   const { action, positional: pos, flags } = args;
   const params = fieldParams(flags);
 
@@ -236,7 +236,7 @@ export async function handleSpaces(args: ParsedArgs): Promise<void> {
 }
 
 /** Lists: lookup, owned lists, tweets, members, memberships, followers. */
-export async function handleLists(args: ParsedArgs): Promise<void> {
+export async function handleLists(args: ParsedArgs): Promise<unknown> {
   const { action, positional: pos, flags } = args;
   const params = fieldParams(flags);
 
@@ -282,7 +282,7 @@ export async function handleLists(args: ParsedArgs): Promise<void> {
 }
 
 /** Trends: single endpoint, action IS the WOEID number. */
-export async function handleTrends(args: ParsedArgs): Promise<void> {
+export async function handleTrends(args: ParsedArgs): Promise<unknown> {
   const woeid = args.action;
   if (!woeid || !/^\d+$/.test(woeid)) die("Usage: trends <woeid>");
   const params = fieldParams(args.flags);
@@ -290,7 +290,7 @@ export async function handleTrends(args: ParsedArgs): Promise<void> {
 }
 
 /** Communities: lookup by ID or search. */
-export async function handleCommunities(args: ParsedArgs): Promise<void> {
+export async function handleCommunities(args: ParsedArgs): Promise<unknown> {
   const { action, positional: pos, flags } = args;
   const params = fieldParams(flags);
 
@@ -312,7 +312,7 @@ export async function handleCommunities(args: ParsedArgs): Promise<void> {
 }
 
 /** Compliance: create/get/list batch compliance jobs. Bearer-only. */
-export async function handleCompliance(args: ParsedArgs): Promise<void> {
+export async function handleCompliance(args: ParsedArgs): Promise<unknown> {
   const { action, positional: pos, flags } = args;
   const params = fieldParams(flags);
 
@@ -340,7 +340,7 @@ export async function handleCompliance(args: ParsedArgs): Promise<void> {
 }
 
 /** Usage: app tweet consumption stats. Single endpoint, no action needed. */
-export async function handleUsage(args: ParsedArgs): Promise<void> {
+export async function handleUsage(args: ParsedArgs): Promise<unknown> {
   const params = fieldParams(args.flags);
   return request({ path: "/usage/tweets", params });
 }
