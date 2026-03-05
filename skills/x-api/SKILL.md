@@ -1,7 +1,7 @@
 ---
-
-## name: x-api
+name: x-api
 description: "The X (Twitter) API v2 — Bearer Token (App-Only) endpoints only. Use when working with the X API, Twitter API, or when the user needs to search tweets, look up tweets/users, access timelines, filtered streams, spaces, lists, trends, or any read-only X API operation. This skill covers all endpoints that use OAuth 2.0 App-Only (Bearer Token) authentication. Triggers: X API, Twitter API, tweet search, tweet lookup, user lookup, filtered stream, sampled stream, spaces, lists, trends, compliance jobs."
+---
 
 # X API v2 — Bearer Token (App-Only)
 
