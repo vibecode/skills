@@ -1,0 +1,1183 @@
+{
+  "source": "Apple iOS 26 UI Kit.sketch",
+  "version": "iOS 26",
+  "colors": {
+    "Accents": {
+      "light": [
+        {
+          "label": "8 Blue",
+          "name": "Accents/Light/8 Blue",
+          "hex": "#0088FF",
+          "rgba": "#0088FF",
+          "alpha": 1,
+          "red": 0,
+          "green": 0.533333,
+          "blue": 1
+        },
+        {
+          "label": "4 Green",
+          "name": "Accents/Light/4 Green",
+          "hex": "#34C759",
+          "rgba": "#34C759",
+          "alpha": 1,
+          "red": 0.203922,
+          "green": 0.780392,
+          "blue": 0.34902
+        },
+        {
+          "label": "10 Purple",
+          "name": "Accents/Light/10 Purple",
+          "hex": "#CB30E0",
+          "rgba": "#CB30E0",
+          "alpha": 1,
+          "red": 0.796078,
+          "green": 0.188235,
+          "blue": 0.878431
+        },
+        {
+          "label": "12 Brown",
+          "name": "Accents/Light/12 Brown",
+          "hex": "#AC7F5E",
+          "rgba": "#AC7F5E",
+          "alpha": 1,
+          "red": 0.67451,
+          "green": 0.498039,
+          "blue": 0.368627
+        },
+        {
+          "label": "3 Yellow",
+          "name": "Accents/Light/3 Yellow",
+          "hex": "#FFCC00",
+          "rgba": "#FFCC00",
+          "alpha": 1,
+          "red": 1,
+          "green": 0.8,
+          "blue": 0
+        },
+        {
+          "label": "6 Teal",
+          "name": "Accents/Light/6 Teal",
+          "hex": "#00C3D0",
+          "rgba": "#00C3D0",
+          "alpha": 1,
+          "red": 0,
+          "green": 0.764706,
+          "blue": 0.815686
+        },
+        {
+          "label": "2 Orange",
+          "name": "Accents/Light/2 Orange",
+          "hex": "#FF8D28",
+          "rgba": "#FF8D28",
+          "alpha": 1,
+          "red": 1,
+          "green": 0.552941,
+          "blue": 0.156863
+        },
+        {
+          "label": "5 Mint",
+          "name": "Accents/Light/5 Mint",
+          "hex": "#00C8B3",
+          "rgba": "#00C8B3",
+          "alpha": 1,
+          "red": 0,
+          "green": 0.784314,
+          "blue": 0.701961
+        },
+        {
+          "label": "11 Pink",
+          "name": "Accents/Light/11 Pink",
+          "hex": "#FF2D55",
+          "rgba": "#FF2D55",
+          "alpha": 1,
+          "red": 1,
+          "green": 0.176471,
+          "blue": 0.333333
+        },
+        {
+          "label": "1 Red",
+          "name": "Accents/Light/1 Red",
+          "hex": "#FF383C",
+          "rgba": "#FF383C",
+          "alpha": 1,
+          "red": 1,
+          "green": 0.219608,
+          "blue": 0.235294
+        },
+        {
+          "label": "7 Cyan",
+          "name": "Accents/Light/7 Cyan",
+          "hex": "#00C0E8",
+          "rgba": "#00C0E8",
+          "alpha": 1,
+          "red": 0,
+          "green": 0.752941,
+          "blue": 0.909804
+        },
+        {
+          "label": "9 Indigo",
+          "name": "Accents/Light/9 Indigo",
+          "hex": "#6155F5",
+          "rgba": "#6155F5",
+          "alpha": 1,
+          "red": 0.380392,
+          "green": 0.333333,
+          "blue": 0.960784
+        }
+      ],
+      "dark": [
+        {
+          "label": "6 Teal",
+          "name": "Accents/Dark/6 Teal",
+          "hex": "#00D2E0",
+          "rgba": "#00D2E0",
+          "alpha": 1,
+          "red": 0,
+          "green": 0.823529,
+          "blue": 0.878431
+        },
+        {
+          "label": "8 Blue",
+          "name": "Accents/Dark/8 Blue",
+          "hex": "#0091FF",
+          "rgba": "#0091FF",
+          "alpha": 1,
+          "red": 0,
+          "green": 0.568627,
+          "blue": 1
+        },
+        {
+          "label": "4 Green",
+          "name": "Accents/Dark/4 Green",
+          "hex": "#30D158",
+          "rgba": "#30D158",
+          "alpha": 1,
+          "red": 0.188235,
+          "green": 0.819608,
+          "blue": 0.345098
+        },
+        {
+          "label": "1 Red",
+          "name": "Accents/Dark/1 Red",
+          "hex": "#FF4245",
+          "rgba": "#FF4245",
+          "alpha": 1,
+          "red": 1,
+          "green": 0.258824,
+          "blue": 0.270588
+        },
+        {
+          "label": "12 Brown",
+          "name": "Accents/Dark/12 Brown",
+          "hex": "#B78A66",
+          "rgba": "#B78A66",
+          "alpha": 1,
+          "red": 0.717647,
+          "green": 0.541176,
+          "blue": 0.4
+        },
+        {
+          "label": "11 Pink",
+          "name": "Accents/Dark/11 Pink",
+          "hex": "#FF375F",
+          "rgba": "#FF375F",
+          "alpha": 1,
+          "red": 1,
+          "green": 0.215686,
+          "blue": 0.372549
+        },
+        {
+          "label": "10 Purple",
+          "name": "Accents/Dark/10 Purple",
+          "hex": "#DB34F2",
+          "rgba": "#DB34F2",
+          "alpha": 1,
+          "red": 0.858824,
+          "green": 0.203922,
+          "blue": 0.94902
+        },
+        {
+          "label": "9 Indigo",
+          "name": "Accents/Dark/9 Indigo",
+          "hex": "#6D7CFF",
+          "rgba": "#6D7CFF",
+          "alpha": 1,
+          "red": 0.427451,
+          "green": 0.486275,
+          "blue": 1
+        },
+        {
+          "label": "3 Yellow",
+          "name": "Accents/Dark/3 Yellow",
+          "hex": "#FFD600",
+          "rgba": "#FFD600",
+          "alpha": 1,
+          "red": 1,
+          "green": 0.839216,
+          "blue": 0
+        },
+        {
+          "label": "7 Cyan",
+          "name": "Accents/Dark/7 Cyan",
+          "hex": "#3CD3FE",
+          "rgba": "#3CD3FE",
+          "alpha": 1,
+          "red": 0.235294,
+          "green": 0.827451,
+          "blue": 0.996078
+        },
+        {
+          "label": "2 Orange",
+          "name": "Accents/Dark/2 Orange",
+          "hex": "#FF9230",
+          "rgba": "#FF9230",
+          "alpha": 1,
+          "red": 1,
+          "green": 0.572549,
+          "blue": 0.188235
+        },
+        {
+          "label": "5 Mint",
+          "name": "Accents/Dark/5 Mint",
+          "hex": "#00DAC3",
+          "rgba": "#00DAC3",
+          "alpha": 1,
+          "red": 0,
+          "green": 0.854902,
+          "blue": 0.764706
+        }
+      ]
+    },
+    "Fills": {
+      "light": [
+        {
+          "label": "3 Tertiary",
+          "name": "Fills/Light/3 Tertiary",
+          "hex": "#767680",
+          "rgba": "rgba(118,118,128,0.12)",
+          "alpha": 0.12,
+          "red": 0.462745,
+          "green": 0.462745,
+          "blue": 0.501961
+        },
+        {
+          "label": "4 Quaternary",
+          "name": "Fills/Light/4 Quaternary",
+          "hex": "#747480",
+          "rgba": "rgba(116,116,128,0.08)",
+          "alpha": 0.08,
+          "red": 0.454902,
+          "green": 0.454902,
+          "blue": 0.501961
+        },
+        {
+          "label": "2 Secondary",
+          "name": "Fills/Light/2 Secondary",
+          "hex": "#787880",
+          "rgba": "rgba(120,120,128,0.16)",
+          "alpha": 0.16,
+          "red": 0.470588,
+          "green": 0.470588,
+          "blue": 0.501961
+        },
+        {
+          "label": "1 Primary",
+          "name": "Fills/Light/1 Primary",
+          "hex": "#787878",
+          "rgba": "rgba(120,120,120,0.20)",
+          "alpha": 0.2,
+          "red": 0.470588,
+          "green": 0.470588,
+          "blue": 0.470588
+        },
+        {
+          "label": "3 Tertiary",
+          "name": "Fills/Light - Vibrant/3 Tertiary",
+          "hex": "#EDEDED",
+          "rgba": "#EDEDED",
+          "alpha": 1,
+          "red": 0.929412,
+          "green": 0.929412,
+          "blue": 0.929412
+        },
+        {
+          "label": "1 Primary",
+          "name": "Fills/Light - Vibrant/1 Primary",
+          "hex": "#CCCCCC",
+          "rgba": "#CCCCCC",
+          "alpha": 1,
+          "red": 0.8,
+          "green": 0.8,
+          "blue": 0.8
+        },
+        {
+          "label": "2 Secondary",
+          "name": "Fills/Light - Vibrant/2 Secondary",
+          "hex": "#E0E0E0",
+          "rgba": "#E0E0E0",
+          "alpha": 1,
+          "red": 0.88,
+          "green": 0.88,
+          "blue": 0.88
+        }
+      ],
+      "dark": [
+        {
+          "label": "1 Primary",
+          "name": "Fills/Dark/1 Primary",
+          "hex": "#787880",
+          "rgba": "rgba(120,120,128,0.36)",
+          "alpha": 0.36,
+          "red": 0.470588,
+          "green": 0.470588,
+          "blue": 0.501961
+        },
+        {
+          "label": "3 Tertiary",
+          "name": "Fills/Dark/3 Tertiary",
+          "hex": "#767680",
+          "rgba": "rgba(118,118,128,0.24)",
+          "alpha": 0.24,
+          "red": 0.462745,
+          "green": 0.462745,
+          "blue": 0.501961
+        },
+        {
+          "label": "2 Secondary",
+          "name": "Fills/Dark/2 Secondary",
+          "hex": "#787880",
+          "rgba": "rgba(120,120,128,0.32)",
+          "alpha": 0.32,
+          "red": 0.470588,
+          "green": 0.470588,
+          "blue": 0.501961
+        },
+        {
+          "label": "4 Quaternary",
+          "name": "Fills/Dark/4 Quaternary",
+          "hex": "#767680",
+          "rgba": "rgba(118,118,128,0.18)",
+          "alpha": 0.18,
+          "red": 0.462745,
+          "green": 0.462745,
+          "blue": 0.501961
+        },
+        {
+          "label": "1 Primary",
+          "name": "Fills/Dark - Vibrant/1 Primary",
+          "hex": "#333333",
+          "rgba": "#333333",
+          "alpha": 1,
+          "red": 0.2,
+          "green": 0.2,
+          "blue": 0.2
+        },
+        {
+          "label": "2 Secondary",
+          "name": "Fills/Dark - Vibrant/2 Secondary",
+          "hex": "#1F1F1F",
+          "rgba": "#1F1F1F",
+          "alpha": 1,
+          "red": 0.12,
+          "green": 0.12,
+          "blue": 0.12
+        },
+        {
+          "label": "3 Tertiary",
+          "name": "Fills/Dark - Vibrant/3 Tertiary",
+          "hex": "#121212",
+          "rgba": "#121212",
+          "alpha": 1,
+          "red": 0.070588,
+          "green": 0.070588,
+          "blue": 0.070588
+        }
+      ]
+    },
+    "Labels": {
+      "light": [
+        {
+          "label": "3 Tertiary",
+          "name": "Labels/Light/3 Tertiary",
+          "hex": "#3C3C43",
+          "rgba": "rgba(60,60,67,0.30)",
+          "alpha": 0.3,
+          "red": 0.235294,
+          "green": 0.235294,
+          "blue": 0.262745
+        },
+        {
+          "label": "2 Secondary",
+          "name": "Labels/Light/2 Secondary",
+          "hex": "#3C3C43",
+          "rgba": "rgba(60,60,67,0.60)",
+          "alpha": 0.6,
+          "red": 0.235294,
+          "green": 0.235294,
+          "blue": 0.262745
+        },
+        {
+          "label": "4 Quaternary",
+          "name": "Labels/Light/4 Quaternary",
+          "hex": "#3C3C43",
+          "rgba": "rgba(60,60,67,0.18)",
+          "alpha": 0.18,
+          "red": 0.235294,
+          "green": 0.235294,
+          "blue": 0.262745
+        },
+        {
+          "label": "1 Primary",
+          "name": "Labels/Light/1 Primary",
+          "hex": "#000000",
+          "rgba": "#000000",
+          "alpha": 1,
+          "red": 0,
+          "green": 0,
+          "blue": 0
+        },
+        {
+          "label": "1 Primary",
+          "name": "Labels/Light - Vibrant/1 Primary",
+          "hex": "#000000",
+          "rgba": "#000000",
+          "alpha": 1,
+          "red": 0,
+          "green": 0,
+          "blue": 0
+        },
+        {
+          "label": "2 Secondary",
+          "name": "Labels/Light - Vibrant/2 Secondary",
+          "hex": "#999999",
+          "rgba": "#999999",
+          "alpha": 1,
+          "red": 0.6,
+          "green": 0.6,
+          "blue": 0.6
+        },
+        {
+          "label": "4 Quaternary",
+          "name": "Labels/Light - Vibrant/4 Quaternary",
+          "hex": "#D9D9D9",
+          "rgba": "#D9D9D9",
+          "alpha": 1,
+          "red": 0.85,
+          "green": 0.85,
+          "blue": 0.85
+        },
+        {
+          "label": "3 Tertiary",
+          "name": "Labels/Light - Vibrant/3 Tertiary",
+          "hex": "#BFBFBF",
+          "rgba": "#BFBFBF",
+          "alpha": 1,
+          "red": 0.75,
+          "green": 0.75,
+          "blue": 0.75
+        }
+      ],
+      "dark": [
+        {
+          "label": "4 Quaternary",
+          "name": "Labels/Dark/4 Quaternary",
+          "hex": "#EBEBF5",
+          "rgba": "rgba(235,235,245,0.16)",
+          "alpha": 0.16,
+          "red": 0.921569,
+          "green": 0.921569,
+          "blue": 0.960784
+        },
+        {
+          "label": "3 Tertiary",
+          "name": "Labels/Dark/3 Tertiary",
+          "hex": "#EBEBF5",
+          "rgba": "rgba(235,235,245,0.30)",
+          "alpha": 0.3,
+          "red": 0.921569,
+          "green": 0.921569,
+          "blue": 0.960784
+        },
+        {
+          "label": "2 Secondary",
+          "name": "Labels/Dark/2 Secondary",
+          "hex": "#EBEBF5",
+          "rgba": "rgba(235,235,245,0.60)",
+          "alpha": 0.6,
+          "red": 0.921569,
+          "green": 0.921569,
+          "blue": 0.960784
+        },
+        {
+          "label": "1 Primary",
+          "name": "Labels/Dark/1 Primary",
+          "hex": "#FFFFFF",
+          "rgba": "#FFFFFF",
+          "alpha": 1,
+          "red": 1,
+          "green": 1,
+          "blue": 1
+        },
+        {
+          "label": "2 Secondary",
+          "name": "Labels/Dark - Vibrant/2 Secondary",
+          "hex": "#999999",
+          "rgba": "#999999",
+          "alpha": 1,
+          "red": 0.6,
+          "green": 0.6,
+          "blue": 0.6
+        },
+        {
+          "label": "4 Quaternary",
+          "name": "Labels/Dark - Vibrant/4 Quaternary",
+          "hex": "#262626",
+          "rgba": "#262626",
+          "alpha": 1,
+          "red": 0.15,
+          "green": 0.15,
+          "blue": 0.15
+        },
+        {
+          "label": "3 Tertiary",
+          "name": "Labels/Dark - Vibrant/3 Tertiary",
+          "hex": "#404040",
+          "rgba": "#404040",
+          "alpha": 1,
+          "red": 0.25,
+          "green": 0.25,
+          "blue": 0.25
+        },
+        {
+          "label": "1 Primary",
+          "name": "Labels/Dark - Vibrant/1 Primary",
+          "hex": "#FFFFFF",
+          "rgba": "#FFFFFF",
+          "alpha": 1,
+          "red": 1,
+          "green": 1,
+          "blue": 1
+        }
+      ]
+    },
+    "Grays": {
+      "light": [
+        {
+          "label": "Gray",
+          "name": "Grays/Light/Gray",
+          "hex": "#8E8E93",
+          "rgba": "#8E8E93",
+          "alpha": 1,
+          "red": 0.556863,
+          "green": 0.556863,
+          "blue": 0.576471
+        },
+        {
+          "label": "Gray 5",
+          "name": "Grays/Light/Gray 5",
+          "hex": "#E5E5EA",
+          "rgba": "#E5E5EA",
+          "alpha": 1,
+          "red": 0.898039,
+          "green": 0.898039,
+          "blue": 0.917647
+        },
+        {
+          "label": "Gray 3",
+          "name": "Grays/Light/Gray 3",
+          "hex": "#C7C7CC",
+          "rgba": "#C7C7CC",
+          "alpha": 1,
+          "red": 0.780392,
+          "green": 0.780392,
+          "blue": 0.8
+        },
+        {
+          "label": "Gray 4",
+          "name": "Grays/Light/Gray 4",
+          "hex": "#D1D1D6",
+          "rgba": "#D1D1D6",
+          "alpha": 1,
+          "red": 0.819608,
+          "green": 0.819608,
+          "blue": 0.839216
+        },
+        {
+          "label": "Gray 6",
+          "name": "Grays/Light/Gray 6",
+          "hex": "#F2F2F7",
+          "rgba": "#F2F2F7",
+          "alpha": 1,
+          "red": 0.94902,
+          "green": 0.94902,
+          "blue": 0.968627
+        },
+        {
+          "label": "Gray 2",
+          "name": "Grays/Light/Gray 2",
+          "hex": "#AEAEB2",
+          "rgba": "#AEAEB2",
+          "alpha": 1,
+          "red": 0.682353,
+          "green": 0.682353,
+          "blue": 0.698039
+        }
+      ],
+      "dark": [
+        {
+          "label": "Gray 3",
+          "name": "Grays/Dark/Gray 3",
+          "hex": "#48484A",
+          "rgba": "#48484A",
+          "alpha": 1,
+          "red": 0.282353,
+          "green": 0.282353,
+          "blue": 0.290196
+        },
+        {
+          "label": "Gray 4",
+          "name": "Grays/Dark/Gray 4",
+          "hex": "#3A3A3C",
+          "rgba": "#3A3A3C",
+          "alpha": 1,
+          "red": 0.227451,
+          "green": 0.227451,
+          "blue": 0.235294
+        },
+        {
+          "label": "Gray 2",
+          "name": "Grays/Dark/Gray 2",
+          "hex": "#636366",
+          "rgba": "#636366",
+          "alpha": 1,
+          "red": 0.388235,
+          "green": 0.388235,
+          "blue": 0.4
+        },
+        {
+          "label": "Gray 5",
+          "name": "Grays/Dark/Gray 5",
+          "hex": "#2C2C2E",
+          "rgba": "#2C2C2E",
+          "alpha": 1,
+          "red": 0.172549,
+          "green": 0.172549,
+          "blue": 0.180392
+        },
+        {
+          "label": "Gray 6",
+          "name": "Grays/Dark/Gray 6",
+          "hex": "#1C1C1E",
+          "rgba": "#1C1C1E",
+          "alpha": 1,
+          "red": 0.109804,
+          "green": 0.109804,
+          "blue": 0.117647
+        },
+        {
+          "label": "Gray",
+          "name": "Grays/Dark/Gray",
+          "hex": "#8E8E93",
+          "rgba": "#8E8E93",
+          "alpha": 1,
+          "red": 0.556863,
+          "green": 0.556863,
+          "blue": 0.576471
+        }
+      ]
+    },
+    "Backgrounds": {
+      "light": [
+        {
+          "label": "Primary",
+          "name": "Backgrounds/Light/Primary",
+          "hex": "#FFFFFF",
+          "rgba": "#FFFFFF",
+          "alpha": 1,
+          "red": 1,
+          "green": 1,
+          "blue": 1
+        },
+        {
+          "label": "Tertiary",
+          "name": "Backgrounds/Light/Tertiary",
+          "hex": "#FFFFFF",
+          "rgba": "#FFFFFF",
+          "alpha": 1,
+          "red": 1,
+          "green": 1,
+          "blue": 1
+        },
+        {
+          "label": "Secondary",
+          "name": "Backgrounds/Light/Secondary",
+          "hex": "#F2F2F7",
+          "rgba": "#F2F2F7",
+          "alpha": 1,
+          "red": 0.94902,
+          "green": 0.94902,
+          "blue": 0.968627
+        }
+      ],
+      "dark": [
+        {
+          "label": "Primary",
+          "name": "Backgrounds/Dark - Elevated/Primary",
+          "hex": "#1C1C1E",
+          "rgba": "#1C1C1E",
+          "alpha": 1,
+          "red": 0.109804,
+          "green": 0.109804,
+          "blue": 0.117647
+        },
+        {
+          "label": "Primary",
+          "name": "Backgrounds/Dark - Base/Primary",
+          "hex": "#000000",
+          "rgba": "#000000",
+          "alpha": 1,
+          "red": 0,
+          "green": 0,
+          "blue": 0
+        },
+        {
+          "label": "Secondary",
+          "name": "Backgrounds/Dark - Elevated/Secondary",
+          "hex": "#2C2C2E",
+          "rgba": "#2C2C2E",
+          "alpha": 1,
+          "red": 0.172549,
+          "green": 0.172549,
+          "blue": 0.180392
+        },
+        {
+          "label": "Secondary",
+          "name": "Backgrounds/Dark - Base/Secondary",
+          "hex": "#1C1C1E",
+          "rgba": "#1C1C1E",
+          "alpha": 1,
+          "red": 0.109804,
+          "green": 0.109804,
+          "blue": 0.117647
+        },
+        {
+          "label": "Tertiary",
+          "name": "Backgrounds/Dark - Elevated/Tertiary",
+          "hex": "#3A3A3C",
+          "rgba": "#3A3A3C",
+          "alpha": 1,
+          "red": 0.227451,
+          "green": 0.227451,
+          "blue": 0.235294
+        },
+        {
+          "label": "Tertiary",
+          "name": "Backgrounds/Dark - Base/Tertiary",
+          "hex": "#2C2C2E",
+          "rgba": "#2C2C2E",
+          "alpha": 1,
+          "red": 0.172549,
+          "green": 0.172549,
+          "blue": 0.180392
+        }
+      ]
+    },
+    "Backgrounds Grouped": {
+      "light": [
+        {
+          "label": "Primary",
+          "name": "Backgrounds Grouped/Light/Primary",
+          "hex": "#F2F2F7",
+          "rgba": "#F2F2F7",
+          "alpha": 1,
+          "red": 0.94902,
+          "green": 0.94902,
+          "blue": 0.968627
+        },
+        {
+          "label": "Secondary",
+          "name": "Backgrounds Grouped/Light/Secondary",
+          "hex": "#FFFFFF",
+          "rgba": "#FFFFFF",
+          "alpha": 1,
+          "red": 1,
+          "green": 1,
+          "blue": 1
+        },
+        {
+          "label": "Tertiary",
+          "name": "Backgrounds Grouped/Light/Tertiary",
+          "hex": "#F2F2F7",
+          "rgba": "#F2F2F7",
+          "alpha": 1,
+          "red": 0.94902,
+          "green": 0.94902,
+          "blue": 0.968627
+        }
+      ],
+      "dark": [
+        {
+          "label": "Primary",
+          "name": "Backgrounds Grouped/Dark - Base/Primary",
+          "hex": "#000000",
+          "rgba": "#000000",
+          "alpha": 1,
+          "red": 0,
+          "green": 0,
+          "blue": 0
+        },
+        {
+          "label": "Secondary",
+          "name": "Backgrounds Grouped/Dark - Base/Secondary",
+          "hex": "#1C1C1E",
+          "rgba": "#1C1C1E",
+          "alpha": 1,
+          "red": 0.109804,
+          "green": 0.109804,
+          "blue": 0.117647
+        },
+        {
+          "label": "Tertiary",
+          "name": "Backgrounds Grouped/Dark - Base/Tertiary",
+          "hex": "#2C2C2E",
+          "rgba": "#2C2C2E",
+          "alpha": 1,
+          "red": 0.172549,
+          "green": 0.172549,
+          "blue": 0.180392
+        },
+        {
+          "label": "Primary",
+          "name": "Backgrounds Grouped/Dark - Elevated/Primary",
+          "hex": "#1C1C1E",
+          "rgba": "#1C1C1E",
+          "alpha": 1,
+          "red": 0.109804,
+          "green": 0.109804,
+          "blue": 0.117647
+        },
+        {
+          "label": "Secondary",
+          "name": "Backgrounds Grouped/Dark - Elevated/Secondary",
+          "hex": "#2C2C2E",
+          "rgba": "#2C2C2E",
+          "alpha": 1,
+          "red": 0.172549,
+          "green": 0.172549,
+          "blue": 0.180392
+        },
+        {
+          "label": "Tertiary",
+          "name": "Backgrounds Grouped/Dark - Elevated/Tertiary",
+          "hex": "#3A3A3C",
+          "rgba": "#3A3A3C",
+          "alpha": 1,
+          "red": 0.227451,
+          "green": 0.227451,
+          "blue": 0.235294
+        }
+      ]
+    },
+    "Separators": {
+      "light": [
+        {
+          "label": "Vibrant",
+          "name": "Separators/Light/Vibrant",
+          "hex": "#E6E6E6",
+          "rgba": "#E6E6E6",
+          "alpha": 1,
+          "red": 0.9,
+          "green": 0.9,
+          "blue": 0.9
+        },
+        {
+          "label": "Non-Opaque",
+          "name": "Separators/Light/Non-Opaque",
+          "hex": "#000000",
+          "rgba": "rgba(0,0,0,0.12)",
+          "alpha": 0.12,
+          "red": 0,
+          "green": 0,
+          "blue": 0
+        },
+        {
+          "label": "Opaque",
+          "name": "Separators/Light/Opaque",
+          "hex": "#C6C6C8",
+          "rgba": "#C6C6C8",
+          "alpha": 1,
+          "red": 0.776471,
+          "green": 0.776471,
+          "blue": 0.784314
+        }
+      ],
+      "dark": [
+        {
+          "label": "Opaque",
+          "name": "Separators/Dark/Opaque",
+          "hex": "#38383A",
+          "rgba": "#38383A",
+          "alpha": 1,
+          "red": 0.219608,
+          "green": 0.219608,
+          "blue": 0.227451
+        },
+        {
+          "label": "Vibrant",
+          "name": "Separators/Dark/Vibrant",
+          "hex": "#1A1A1A",
+          "rgba": "#1A1A1A",
+          "alpha": 1,
+          "red": 0.1,
+          "green": 0.1,
+          "blue": 0.1
+        },
+        {
+          "label": "Non-Opaque",
+          "name": "Separators/Dark/Non-Opaque",
+          "hex": "#FFFFFF",
+          "rgba": "rgba(255,255,255,0.12)",
+          "alpha": 0.12,
+          "red": 1,
+          "green": 1,
+          "blue": 1
+        }
+      ]
+    },
+    "Liquid Glass": {
+      "light": [
+        {
+          "label": "1 Primary/Over Bright",
+          "name": "Liquid Glass/Labels - Controls/1 Primary/Over Bright",
+          "hex": "#1A1A1A",
+          "rgba": "#1A1A1A",
+          "alpha": 1,
+          "red": 0.101961,
+          "green": 0.101961,
+          "blue": 0.101961
+        },
+        {
+          "label": "2 Secondary/Over Bright",
+          "name": "Liquid Glass/Labels - Controls/2 Secondary/Over Bright",
+          "hex": "#727272",
+          "rgba": "#727272",
+          "alpha": 1,
+          "red": 0.44902,
+          "green": 0.44902,
+          "blue": 0.44902
+        },
+        {
+          "label": "3 Tertiary/Over Bright",
+          "name": "Liquid Glass/Labels - Controls/3 Tertiary/Over Bright",
+          "hex": "#BFBFBF",
+          "rgba": "#BFBFBF",
+          "alpha": 1,
+          "red": 0.74902,
+          "green": 0.74902,
+          "blue": 0.74902
+        },
+        {
+          "label": "1 Primary/Over Dim",
+          "name": "Liquid Glass/Labels - Controls/1 Primary/Over Dim",
+          "hex": "#F5F5F5",
+          "rgba": "#F5F5F5",
+          "alpha": 1,
+          "red": 0.960784,
+          "green": 0.960784,
+          "blue": 0.960784
+        },
+        {
+          "label": "2 Secondary/Over Dim",
+          "name": "Liquid Glass/Labels - Controls/2 Secondary/Over Dim",
+          "hex": "#8A8A8A",
+          "rgba": "#8A8A8A",
+          "alpha": 1,
+          "red": 0.54098,
+          "green": 0.54098,
+          "blue": 0.54098
+        },
+        {
+          "label": "3 Tertiary/Over Dim",
+          "name": "Liquid Glass/Labels - Controls/3 Tertiary/Over Dim",
+          "hex": "#404040",
+          "rgba": "#404040",
+          "alpha": 1,
+          "red": 0.25098,
+          "green": 0.25098,
+          "blue": 0.25098
+        },
+        {
+          "label": "1 Primary/Over Bright",
+          "name": "Liquid Glass/Labels/1 Primary/Over Bright",
+          "hex": "#1A1A1A",
+          "rgba": "#1A1A1A",
+          "alpha": 1,
+          "red": 0.1,
+          "green": 0.1,
+          "blue": 0.1
+        },
+        {
+          "label": "2 Secondary/Over Bright",
+          "name": "Liquid Glass/Labels/2 Secondary/Over Bright",
+          "hex": "#727272",
+          "rgba": "#727272",
+          "alpha": 1,
+          "red": 0.447059,
+          "green": 0.447059,
+          "blue": 0.447059
+        },
+        {
+          "label": "3 Tertiary/Over Bright",
+          "name": "Liquid Glass/Labels/3 Tertiary/Over Bright",
+          "hex": "#BFBFBF",
+          "rgba": "#BFBFBF",
+          "alpha": 1,
+          "red": 0.74902,
+          "green": 0.74902,
+          "blue": 0.74902
+        },
+        {
+          "label": "4 Quaternary/Over Bright",
+          "name": "Liquid Glass/Labels/4 Quaternary/Over Bright",
+          "hex": "#D9D9D9",
+          "rgba": "#D9D9D9",
+          "alpha": 1,
+          "red": 0.85098,
+          "green": 0.85098,
+          "blue": 0.85098
+        },
+        {
+          "label": "1 Primary/Over Dim",
+          "name": "Liquid Glass/Labels/1 Primary/Over Dim",
+          "hex": "#F5F5F5",
+          "rgba": "#F5F5F5",
+          "alpha": 1,
+          "red": 0.96,
+          "green": 0.96,
+          "blue": 0.96
+        },
+        {
+          "label": "2 Secondary/Over Dim",
+          "name": "Liquid Glass/Labels/2 Secondary/Over Dim",
+          "hex": "#8A8A8A",
+          "rgba": "#8A8A8A",
+          "alpha": 1,
+          "red": 0.54,
+          "green": 0.54,
+          "blue": 0.54
+        },
+        {
+          "label": "3 Tertiary/Over Dim",
+          "name": "Liquid Glass/Labels/3 Tertiary/Over Dim",
+          "hex": "#404040",
+          "rgba": "#404040",
+          "alpha": 1,
+          "red": 0.25098,
+          "green": 0.25098,
+          "blue": 0.25098
+        },
+        {
+          "label": "4 Quaternary/Over Dim",
+          "name": "Liquid Glass/Labels/4 Quaternary/Over Dim",
+          "hex": "#262626",
+          "rgba": "#262626",
+          "alpha": 1,
+          "red": 0.14902,
+          "green": 0.14902,
+          "blue": 0.14902
+        }
+      ],
+      "dark": []
+    }
+  },
+  "textStyles": [
+    {
+      "name": "01 LargeTitle/1 Default",
+      "styleName": "01 LargeTitle",
+      "fontSize": 34,
+      "fontWeight": 400,
+      "lineHeight": 41,
+      "fontName": "SFPro-Regular"
+    },
+    {
+      "name": "02 Title1/1 Default",
+      "styleName": "02 Title1",
+      "fontSize": 28,
+      "fontWeight": 400,
+      "lineHeight": 34,
+      "fontName": "SFPro-Regular"
+    },
+    {
+      "name": "03 Title2/1 Default",
+      "styleName": "03 Title2",
+      "fontSize": 22,
+      "fontWeight": 400,
+      "lineHeight": 28,
+      "fontName": "SFPro-Regular"
+    },
+    {
+      "name": "04 Title3/1 Default",
+      "styleName": "04 Title3",
+      "fontSize": 20,
+      "fontWeight": 400,
+      "lineHeight": 25,
+      "fontName": "SFPro-Regular"
+    },
+    {
+      "name": "05 Headline/1 Default",
+      "styleName": "05 Headline",
+      "fontSize": 17,
+      "fontWeight": 600,
+      "lineHeight": 22,
+      "fontName": "SFPro-Semibold"
+    },
+    {
+      "name": "06 Body/1 Default",
+      "styleName": "06 Body",
+      "fontSize": 17,
+      "fontWeight": 400,
+      "lineHeight": 22,
+      "fontName": "SFPro-Regular"
+    },
+    {
+      "name": "07 Callout/1 Default",
+      "styleName": "07 Callout",
+      "fontSize": 16,
+      "fontWeight": 400,
+      "lineHeight": 21,
+      "fontName": "SFPro-Regular"
+    },
+    {
+      "name": "08 Subheadline/1 Default",
+      "styleName": "08 Subheadline",
+      "fontSize": 15,
+      "fontWeight": 400,
+      "lineHeight": 20,
+      "fontName": "SFPro-Regular"
+    },
+    {
+      "name": "09 Footnote/1 Default",
+      "styleName": "09 Footnote",
+      "fontSize": 13,
+      "fontWeight": 400,
+      "lineHeight": 18,
+      "fontName": "SFPro-Regular"
+    },
+    {
+      "name": "10 Caption1/1 Default",
+      "styleName": "10 Caption1",
+      "fontSize": 12,
+      "fontWeight": 400,
+      "lineHeight": 16,
+      "fontName": "SFPro-Regular"
+    },
+    {
+      "name": "11 Caption2/1 Default",
+      "styleName": "11 Caption2",
+      "fontSize": 11,
+      "fontWeight": 400,
+      "lineHeight": 13,
+      "fontName": "SFPro-Regular"
+    }
+  ]
+}
