@@ -1,6 +1,6 @@
 ---
 name: take-the-wheel
-description: Lead conversations autonomously by gathering information one question at a time, actively researching (web search, codebase exploration, file reading) after each response, self-assessing clarity on a 1-10 scale, and only executing final work once understanding is complete. Use when user says "take the wheel", "you lead", "drive this", "lead this", "you drive", "take over", "run this", "you're in charge", or asks to be guided through a task step by step. Supports any task type including writing, coding, planning, research, and project setup. Do NOT use for simple one-shot questions, quick lookups, or when the user is clearly directing the work themselves.
+description: Use when user says "take the wheel", "you lead", "drive this", "lead this", "you drive", "take over", "run this", "you're in charge", or asks to be guided through a task step by step. Do NOT use for simple one-shot questions or when the user is clearly directing the work themselves.
 ---
 
 # Take the Wheel
