@@ -1,0 +1,82 @@
+[
+  {
+    "query": "i need to pitch a dog-walking startup tomorrow. can you mock up 4 polished iphone screens for the customer app: onboarding, nearby walkers map, booking, and live walk status? i only need visuals i can show in a browser, not production code.",
+    "should_trigger": true
+  },
+  {
+    "query": "Design an iOS habit tracker for night routines. Give me a native-feeling mobile UI with a calm visual direction and screens for onboarding, today's checklist, streaks, and reminder settings. This is for concept validation, not app implementation.",
+    "should_trigger": true
+  },
+  {
+    "query": "my PM dropped a messy feature brief in docs/meal-planner-notes.md. turn it into a believable mobile app flow for a meal planning app with 5 screens and consistent ios patterns. wireframe quality is too rough; make it feel like a real product.",
+    "should_trigger": true
+  },
+  {
+    "query": "Can you create a prototype-style mockup for an iPhone meditation app for college students? I want a home screen, session player, progress screen, and profile. Static screens are fine as long as they look polished.",
+    "should_trigger": true
+  },
+  {
+    "query": "I have an idea for a campus marketplace app and need the core flow visualized before engineering starts. Please design the browse feed, listing detail, sell item form, inbox, and account screens in a native iOS style.",
+    "should_trigger": true
+  },
+  {
+    "query": "make me a mobile UI concept for a barber booking app. i want an elegant dark theme, strong hierarchy, and clear booking actions. give me a few connected iphone screens i can review locally.",
+    "should_trigger": true
+  },
+  {
+    "query": "Could you mock up two alternative iOS checkout flows for a grocery delivery app? I want to compare a compact one-page checkout versus a more guided multi-step flow. Keep this at the design/prototype level only.",
+    "should_trigger": true
+  },
+  {
+    "query": "Need some App Store style preview screens for a travel journaling app concept. Please design the underlying mobile screens first so they feel cohesive: trip timeline, map, journal entry, and memories gallery.",
+    "should_trigger": true
+  },
+  {
+    "query": "I want to explore what a premium finance tracking app could look like on iPhone. Can you build a visual mockup with 3 to 5 screens, realistic copy, and modern iOS components so I can use it in a design review?",
+    "should_trigger": true
+  },
+  {
+    "query": "Take the rough app idea below and turn it into a coherent mobile flow with polished screens: a pet medication reminder app for busy families. I need something more refined than low-fi wireframes, but still just static UI.",
+    "should_trigger": true
+  },
+  {
+    "query": "Build the actual SwiftUI screens for a habit tracker app and wire them up with navigation and state management. I need production-ready iOS code, not mockups.",
+    "should_trigger": false
+  },
+  {
+    "query": "I already designed these screens in Figma. Can you convert the file into React Native components and set up the navigation structure for me?",
+    "should_trigger": false
+  },
+  {
+    "query": "Design a responsive marketing website for a travel startup with a hero section, pricing, FAQ, and email capture. It should look great on desktop and mobile browsers.",
+    "should_trigger": false
+  },
+  {
+    "query": "Can you help me debug why the spacing in my SwiftUI onboarding screen collapses on iPhone SE? The screenshot is in ~/Downloads/onboarding-bug.png and I need the code fixed.",
+    "should_trigger": false
+  },
+  {
+    "query": "I need a brand identity package for a new wellness app: logo concepts, color palette, typography, and social profile assets. No app screens yet.",
+    "should_trigger": false
+  },
+  {
+    "query": "Make an Android implementation plan for our shopping app redesign. I need Jetpack Compose component recommendations, architecture notes, and engineering estimates.",
+    "should_trigger": false
+  },
+  {
+    "query": "Can you generate a Prisma schema and API endpoints for a barber booking app with users, appointments, services, and availability windows?",
+    "should_trigger": false
+  },
+  {
+    "query": "Review this existing mobile screenshot and tell me what's wrong with the UX. I want critique and recommendations, not a new mockup.",
+    "should_trigger": false
+  },
+  {
+    "query": "Please turn this product brief into a PRD for a medication reminder app, including goals, personas, user stories, metrics, and launch risks.",
+    "should_trigger": false
+  },
+  {
+    "query": "I need a clickable prototype in React Native for investor demos. It should run on a phone and include real navigation, basic state, and a backend stub.",
+    "should_trigger": false
+  }
+]

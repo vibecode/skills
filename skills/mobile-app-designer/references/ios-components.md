@@ -2,7 +2,9 @@
 
 Complete reference for all iOS design system classes available in the mobile app designer canvas. All classes are scoped under `.ios-screen` and use iOS 26 design tokens.
 
-> **Dark mode:** Add `data-theme="dark"` to the `.ios-screen` element to switch all tokens to their dark-mode values automatically.
+> **Dark mode:** Add `data-theme="dark"` to the screen's `<template>` tag. The canvas applies that theme to the injected `.ios-screen` automatically.
+>
+> **Icons:** Use Lucide icons for UI iconography. Include `<script src="https://unpkg.com/lucide@latest"></script>` in `index.html`, then use `<i data-lucide="house" class="ios-icon-sm"></i>` or similar. Do not use emoji as interface icons.
 
 ## Design Tokens
 
@@ -51,6 +53,7 @@ Every screen should follow this structure:
 
 - `.ios-safe-area-top` — 59px spacer for status bar + Dynamic Island
 - `.ios-safe-area-bottom` — 34px spacer for home indicator
+- Own the page background on a screen wrapper or a top-level surface. Do not rely on `.ios-list` or `.ios-search-bar` to paint the whole screen for you.
 
 ---
 
@@ -96,9 +99,9 @@ Glass pills are the core building block for iOS 26 navigation and toolbars. They
 
 <!-- Pill group (multiple icons in one pill) -->
 <span class="ios-pill-group">
-  <span class="ios-pill-icon">🔍</span>
-  <span class="ios-pill-icon">➕</span>
-  <span class="ios-pill-icon">📤</span>
+  <i data-lucide="search" class="ios-pill-icon ios-icon-sm"></i>
+  <i data-lucide="plus" class="ios-pill-icon ios-icon-sm"></i>
+  <i data-lucide="share" class="ios-pill-icon ios-icon-sm"></i>
 </span>
 ```
 
@@ -129,8 +132,8 @@ Glass pills are the core building block for iOS 26 navigation and toolbars. They
 <div class="ios-nav-bar">
   <span class="ios-pill">Back</span>
   <span class="ios-pill-group">
-    <span class="ios-pill-icon">🔍</span>
-    <span class="ios-pill-icon">➕</span>
+    <i data-lucide="search" class="ios-pill-icon ios-icon-sm"></i>
+    <i data-lucide="plus" class="ios-pill-icon ios-icon-sm"></i>
   </span>
 </div>
 <div class="ios-nav-bar-large">
@@ -150,12 +153,12 @@ In iOS 26 the bottom toolbar is **transparent** with glass pill buttons. Pills i
 ```html
 <div class="ios-toolbar">
   <div style="display:flex;gap:12px;">
-    <span class="ios-pill">📤</span>
-    <span class="ios-pill">✏️</span>
+    <span class="ios-pill"><i data-lucide="share" class="ios-icon-sm"></i></span>
+    <span class="ios-pill"><i data-lucide="pencil" class="ios-icon-sm"></i></span>
   </div>
   <div style="display:flex;gap:12px;">
-    <span class="ios-pill">🔍</span>
-    <span class="ios-pill">➕</span>
+    <span class="ios-pill"><i data-lucide="search" class="ios-icon-sm"></i></span>
+    <span class="ios-pill"><i data-lucide="plus" class="ios-icon-sm"></i></span>
   </div>
 </div>
 ```
@@ -165,9 +168,9 @@ In iOS 26 the bottom toolbar is **transparent** with glass pill buttons. Pills i
 ```html
 <div class="ios-toolbar" style="gap:12px;">
   <div class="ios-toolbar-search">
-    <span class="ios-toolbar-search-icon">🔍</span>
+    <i data-lucide="search" class="ios-toolbar-search-icon ios-icon-sm"></i>
     <span class="ios-toolbar-search-placeholder">Search</span>
-    <span class="ios-toolbar-search-trailing">🎤</span>
+    <i data-lucide="mic" class="ios-toolbar-search-trailing ios-icon-sm"></i>
   </div>
 </div>
 ```
@@ -191,21 +194,86 @@ In iOS 26 the tab bar is a **floating glass pill** — rounded, translucent, and
 ```html
 <div class="ios-tab-bar" style="position:absolute;bottom:0;left:0;right:0;">
   <a class="ios-tab-bar-item ios-tab-bar-item-active">
-    <span class="ios-tab-bar-icon">🏠</span>
+    <i data-lucide="house" class="ios-tab-bar-icon ios-icon-sm"></i>
     <span>Home</span>
   </a>
   <a class="ios-tab-bar-item">
-    <span class="ios-tab-bar-icon">🔍</span>
+    <i data-lucide="search" class="ios-tab-bar-icon ios-icon-sm"></i>
     <span>Search</span>
   </a>
   <a class="ios-tab-bar-item">
-    <span class="ios-tab-bar-icon">👤</span>
+    <i data-lucide="user-round" class="ios-tab-bar-icon ios-icon-sm"></i>
     <span>Profile</span>
   </a>
 </div>
 ```
 
-Use emoji or inline SVG for tab icons. Apply `.ios-tab-bar-item-active` to the selected tab. The pill shape, glass blur, and margin are built into the `.ios-tab-bar` class.
+Use Lucide icons for tab icons. Apply `.ios-tab-bar-item-active` to the selected tab. The pill shape, glass blur, and margin are built into the `.ios-tab-bar` class.
+
+If a flow uses a tab bar for primary navigation, render the same tab bar on every top-level destination screen and only change the active item.
+
+If the app uses a custom accent, set it on the screen wrapper so active tabs, buttons, toggles, and other primary states stay consistent:
+
+```html
+<div
+  class="flex min-h-full flex-col"
+  style="--ios-accent:#c89b64;--ios-accent-rgb:200,155,100;background:var(--ios-bg);"
+>
+  <!-- rest of screen -->
+</div>
+```
+
+Avoid mixing a custom warm accent with default iOS blue active tabs.
+
+---
+
+## Map
+
+Use the built-in real map surface when a product needs a location view. The canvas loads MapLibre GL JS and OpenFreeMap automatically for any `.ios-map` with `data-map-center`, so the map is rendered from real tiles instead of decorative fake roads.
+
+```html
+<div
+  class="ios-map"
+  data-map-center="-73.9855,40.758"
+  data-map-zoom="13.4"
+  data-map-bearing="-14"
+>
+  <button class="ios-map-fab">
+    <i data-lucide="locate-fixed" class="ios-icon-sm"></i>
+  </button>
+
+  <button class="ios-map-pin ios-map-pin-active" style="top:76px;left:156px;">
+    <i data-lucide="car-taxi-front" class="ios-icon-sm"></i>
+  </button>
+  <button class="ios-map-pin" style="top:144px;left:88px;">
+    <i data-lucide="dog" class="ios-icon-sm"></i>
+  </button>
+  <div class="ios-map-label" style="top:122px;left:182px;">
+    <i data-lucide="clock-3" class="ios-icon-sm"></i>
+    4 min
+  </div>
+
+  <div class="ios-map-card">
+    <div class="ios-map-card-row">
+      <div>
+        <div class="ios-headline">Jay Walker</div>
+        <div class="ios-caption ios-label-secondary">2 blocks away</div>
+      </div>
+      <div class="ios-map-chip">
+        <i data-lucide="star" class="ios-icon-sm"></i>
+        4.9
+      </div>
+    </div>
+  </div>
+</div>
+```
+
+Map rules:
+
+- `.ios-map` owns the rendered map surface. Set `data-map-center="lng,lat"` and optionally `data-map-zoom`, `data-map-bearing`, `data-map-pitch`, or `data-map-style`.
+- The map itself is the background layer. Add cards, chips, pins, and labels as normal HTML overlays on top of it.
+- Use `.ios-map-pin`, `.ios-map-pin-active`, `.ios-map-label`, `.ios-map-card`, `.ios-map-chip`, and `.ios-map-fab` for the overlay controls.
+- Keep overlays sparse. Let the real geography carry the composition instead of recreating roads manually.
 
 ---
 
@@ -245,13 +313,13 @@ iOS 26 has three header styles. Headers are no longer uppercase.
   <div class="ios-list-header">General</div>
   <div class="ios-list-group">
     <div class="ios-list-cell ios-list-cell-has-icon">
-      <div class="ios-list-cell-icon ios-bg-blue">✈️</div>
+      <div class="ios-list-cell-icon ios-bg-orange"><i data-lucide="plane" class="ios-icon-sm" style="color:white;"></i></div>
       <div class="ios-list-cell-detail">
         <span>Airplane Mode</span>
       </div>
     </div>
     <div class="ios-list-cell ios-list-cell-has-icon">
-      <div class="ios-list-cell-icon ios-bg-blue">📶</div>
+      <div class="ios-list-cell-icon ios-bg-blue"><i data-lucide="wifi" class="ios-icon-sm" style="color:white;"></i></div>
       <div class="ios-list-cell-detail">
         <span>Wi-Fi</span>
         <span class="ios-list-cell-value">Home Network</span>
@@ -272,7 +340,7 @@ Add `.ios-list-cell-has-icon` to cells with icons so the separator indents past 
 
 ```html
 <div class="ios-list-cell ios-list-cell-has-icon">
-  <div class="ios-list-cell-icon ios-bg-blue">✈️</div>
+  <div class="ios-list-cell-icon ios-bg-orange"><i data-lucide="plane" class="ios-icon-sm" style="color:white;"></i></div>
   <span style="flex:1">Airplane Mode</span>
   <div class="ios-toggle ios-toggle-on"></div>
 </div>
@@ -691,7 +759,7 @@ A compact increment/decrement control (92x32 pill).
 </div>
 ```
 
-Dark mode is automatic via `data-theme="dark"` on the `.ios-screen` parent.
+Dark mode is automatic via `data-theme="dark"` on the screen's `<template>` parent.
 
 ---
 
@@ -761,7 +829,7 @@ Context menus appear on long-press, showing a glass menu with optional preview a
 </div>
 ```
 
-Dark mode is automatic via `data-theme="dark"` on the `.ios-screen` parent.
+Dark mode is automatic via `data-theme="dark"` on the screen's `<template>` parent.
 
 ---
 
@@ -893,7 +961,7 @@ Standalone dropdown menus **are glass**. They use 34px border-radius and glass m
 </div>
 ```
 
-Dark mode is automatic via `data-theme="dark"` on the `.ios-screen` parent.
+Dark mode is automatic via `data-theme="dark"` on the screen's `<template>` parent.
 
 ---
 

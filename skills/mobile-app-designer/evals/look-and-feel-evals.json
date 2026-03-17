@@ -1,0 +1,47 @@
+{
+  "skill_name": "mobile-app-designer",
+  "evals": [
+    {
+      "id": "night-routine-habit-tracker",
+      "prompt": "Design an iOS habit tracker for night routines. Give it a calm premium feel and create onboarding, tonight's checklist, streaks, and reminder settings screens. This is for concept validation, not app implementation.",
+      "focus_areas": [
+        "calm premium visual direction",
+        "clear visual hierarchy",
+        "cohesive flow across onboarding and recurring use"
+      ]
+    },
+    {
+      "id": "dog-walking-booking-app",
+      "prompt": "I need to pitch a dog-walking startup tomorrow. Mock up 4 polished iPhone screens for the customer app: onboarding, nearby walkers map, booking, and live walk status. I only need visuals I can show in a browser, not production code.",
+      "focus_areas": [
+        "trustworthy consumer marketplace feel",
+        "screen-to-screen continuity",
+        "strong primary actions"
+      ]
+    },
+    {
+      "id": "meal-planner-from-brief",
+      "prompt": "My PM dropped a messy feature brief in docs/meal-planner-notes.md. Turn it into a believable mobile app flow for a meal planning app with 5 screens and consistent iOS patterns. Wireframe quality is too rough; make it feel like a real product.",
+      "focus_areas": [
+        "brief-to-product translation",
+        "realistic meal-planning flow",
+        "avoids generic dashboard look"
+      ],
+      "setup_files": [
+        {
+          "path": "docs/meal-planner-notes.md",
+          "content": "# Meal planner notes\n\n- users are busy parents planning weeknight dinners\n- should feel less like calorie tracking and more like calm household planning\n- must support weekly plan, saved recipes, quick swaps, and grocery list generation\n- avoid looking corporate or spreadsheet-like\n- we want one screen that makes tonight's dinner decision feel easy\n- visual direction should feel warm, modern, and premium but still practical\n"
+        }
+      ]
+    },
+    {
+      "id": "barber-booking-dark-theme",
+      "prompt": "Make me a mobile UI concept for a barber booking app. I want an elegant dark theme, strong hierarchy, and clear booking actions. Give me a few connected iPhone screens I can review locally.",
+      "focus_areas": [
+        "dark theme taste level",
+        "booking clarity",
+        "premium service atmosphere"
+      ]
+    }
+  ]
+}

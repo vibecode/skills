@@ -3,6 +3,8 @@
 
 :root {
   --ios-blue: #0088FF;
+  --ios-accent: #0088FF;
+  --ios-accent-rgb: 0, 136, 255;
   --ios-green: #34C759;
   --ios-red: #FF383C;
   --ios-orange: #FF8D28;
@@ -52,6 +54,8 @@
 /* Dark mode */
 .ios-screen[data-theme="dark"] {
   --ios-blue: #0091FF;
+  --ios-accent: #0091FF;
+  --ios-accent-rgb: 0, 145, 255;
   --ios-green: #30D158;
   --ios-red: #FF4245;
   --ios-orange: #FF9230;
@@ -283,7 +287,7 @@
 
 /* Blue tinted glass pill (primary action) */
 .ios-screen .ios-pill-primary {
-  background: var(--ios-blue);
+  background: var(--ios-accent);
   color: white;
 }
 
@@ -419,6 +423,7 @@
   backdrop-filter: var(--ios-glass-blur);
   -webkit-backdrop-filter: var(--ios-glass-blur);
   box-shadow: var(--ios-glass-shadow);
+  z-index: 6;
 }
 
 .ios-screen .ios-tab-bar-item {
@@ -436,7 +441,7 @@
 }
 
 .ios-screen .ios-tab-bar-item-active {
-  color: var(--ios-blue);
+  color: var(--ios-accent);
 }
 
 .ios-screen .ios-tab-bar-icon {
@@ -450,7 +455,7 @@
 
 /* List / Table View */
 .ios-screen .ios-list {
-  background: var(--ios-bg-secondary);
+  background: transparent;
 }
 
 .ios-screen .ios-list-inset {
@@ -517,7 +522,7 @@
 .ios-screen .ios-list-header-action {
   font-size: 15px;
   font-weight: 400;
-  color: var(--ios-blue);
+  color: var(--ios-accent);
   line-height: 20px;
   cursor: pointer;
 }
@@ -640,23 +645,23 @@
 }
 
 .ios-screen .ios-btn-filled {
-  background: var(--ios-blue);
+  background: var(--ios-accent);
   color: white;
 }
 
 .ios-screen .ios-btn-gray {
   background: rgba(118, 118, 128, 0.12);
-  color: var(--ios-blue);
+  color: var(--ios-accent);
 }
 
 .ios-screen .ios-btn-tinted {
-  background: rgba(0, 136, 255, 0.15);
-  color: var(--ios-blue);
+  background: rgba(var(--ios-accent-rgb), 0.15);
+  color: var(--ios-accent);
 }
 
 .ios-screen .ios-btn-plain {
   background: transparent;
-  color: var(--ios-blue);
+  color: var(--ios-accent);
   padding: 8px 0;
 }
 
@@ -712,11 +717,11 @@
 }
 
 .ios-screen .ios-toggle-on {
-  background: var(--ios-green);
+  background: var(--ios-accent);
 }
 
 .ios-screen[data-theme="dark"] .ios-toggle-on {
-  background: var(--ios-green);
+  background: var(--ios-accent);
 }
 
 .ios-screen .ios-toggle-on::after {
@@ -746,7 +751,7 @@
 /* Search Bar */
 .ios-screen .ios-search-bar {
   padding: 8px 16px;
-  background: var(--ios-bg);
+  background: transparent;
 }
 
 .ios-screen .ios-search-bar-input {
@@ -1056,7 +1061,7 @@
 }
 
 .ios-screen .ios-alert-action-primary {
-  background: var(--ios-blue);
+  background: var(--ios-accent);
   color: white;
 }
 
@@ -1094,7 +1099,7 @@
 
 .ios-screen .ios-progress-bar {
   height: 100%;
-  background: var(--ios-blue);
+  background: var(--ios-accent);
   border-radius: 2px;
   transition: width 0.3s;
 }
@@ -1265,7 +1270,7 @@
   left: 0;
   height: 100%;
   border-radius: 3px;
-  background: var(--ios-blue);
+  background: var(--ios-accent);
 }
 
 .ios-screen .ios-slider-thumb {
@@ -1363,7 +1368,7 @@
 
 .ios-screen .ios-context-menu-action-icon {
   font-size: 13px;
-  color: var(--ios-blue);
+  color: var(--ios-accent);
 }
 
 .ios-screen .ios-context-menu-action-label {
@@ -1545,7 +1550,7 @@
   flex: 0 0 92px;
   height: 45px;
   border-radius: 8px;
-  background: var(--ios-blue);
+  background: var(--ios-accent);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1767,7 +1772,7 @@
 }
 
 .ios-screen .ios-date-pill-active {
-  background: var(--ios-blue);
+  background: var(--ios-accent);
   color: white;
 }
 
@@ -1822,12 +1827,12 @@
 .ios-screen .ios-calendar-day-today {
   font-size: 24px;
   font-weight: 500;
-  color: var(--ios-blue);
-  background: rgba(0, 136, 255, 0.12);
+  color: var(--ios-accent);
+  background: rgba(var(--ios-accent-rgb), 0.12);
 }
 
 .ios-screen .ios-calendar-day-selected {
-  background: var(--ios-blue);
+  background: var(--ios-accent);
   color: white;
   font-weight: 500;
 }
@@ -1988,4 +1993,192 @@
   outline: 3px solid white;
   outline-offset: -3px;
   box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+}
+
+.ios-screen .ios-icon,
+.ios-screen [data-lucide] {
+  width: 18px;
+  height: 18px;
+  stroke-width: 1.9;
+  flex-shrink: 0;
+}
+
+.ios-screen .ios-icon-sm {
+  width: 16px;
+  height: 16px;
+}
+
+.ios-screen .ios-icon-lg {
+  width: 22px;
+  height: 22px;
+}
+
+.ios-screen .ios-map {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  width: 100%;
+  min-height: 220px;
+  border-radius: 26px;
+  background: var(--ios-bg-secondary);
+}
+
+.ios-screen[data-theme="dark"] .ios-map {
+  background: #0f1012;
+}
+
+.ios-screen .ios-map-surface,
+.ios-screen .ios-map .maplibregl-map,
+.ios-screen .ios-map .maplibregl-canvas-container,
+.ios-screen .ios-map .maplibregl-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.ios-screen .ios-map-surface {
+  z-index: 0;
+}
+
+.ios-screen .ios-map .maplibregl-canvas {
+  border-radius: inherit;
+}
+
+.ios-screen[data-theme="dark"] .ios-map .maplibregl-canvas {
+  filter: brightness(0.82) saturate(0.8);
+}
+
+.ios-screen .ios-map > :not(.ios-map-surface):not(.ios-map-attribution) {
+  position: relative;
+  z-index: 2;
+}
+
+.ios-screen .ios-map .maplibregl-control-container {
+  display: none;
+}
+
+.ios-screen .ios-map-pin {
+  position: absolute;
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 999px;
+  background: white;
+  color: var(--ios-label);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.14);
+}
+
+.ios-screen[data-theme="dark"] .ios-map-pin {
+  background: #24262b;
+  color: white;
+}
+
+.ios-screen .ios-map-pin-active {
+  background: var(--ios-accent);
+  color: white;
+}
+
+.ios-screen .ios-map-label {
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 28px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--ios-label);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.ios-screen[data-theme="dark"] .ios-map-label {
+  background: rgba(36, 38, 43, 0.92);
+  color: white;
+}
+
+.ios-screen .ios-map-card {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.12);
+}
+
+.ios-screen[data-theme="dark"] .ios-map-card {
+  background: rgba(28, 28, 30, 0.82);
+}
+
+.ios-screen .ios-map-card-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.ios-screen .ios-map-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 28px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: rgba(118, 118, 128, 0.12);
+  color: var(--ios-label);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.ios-screen .ios-map-fab {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  border: none;
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--ios-label);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
+}
+
+.ios-screen[data-theme="dark"] .ios-map-fab {
+  background: rgba(36, 38, 43, 0.92);
+  color: white;
+}
+
+.ios-screen .ios-map-attribution {
+  position: absolute;
+  left: 10px;
+  bottom: 10px;
+  z-index: 3;
+  max-width: calc(100% - 20px);
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.82);
+  color: rgba(40, 40, 42, 0.72);
+  font-size: 10px;
+  line-height: 1.2;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.ios-screen[data-theme="dark"] .ios-map-attribution {
+  background: rgba(28, 28, 30, 0.84);
+  color: rgba(255, 255, 255, 0.72);
 }
