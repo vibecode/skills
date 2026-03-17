@@ -1,11 +1,93 @@
 ---
 name: mobile-app-designer
-description: Design mobile app screens on a Figma-like interactive canvas with iOS design system components. Use when the user wants to design, prototype, wireframe, or mock up a mobile app UI — including creating new screens, editing layouts, building app flows, or visualizing iOS interfaces. Triggers on requests like "design an app", "mock up a screen", "create a wireframe", "build a prototype", "iOS app design", "mobile UI". Do NOT use for building functional mobile apps (Swift, React Native, Flutter), generating production code, or backend/API work — this skill produces static visual mockups only.
+description: Design mobile app screens on a Figma-like interactive canvas with iOS design system components. Use when the user wants to design, prototype, wireframe, mock up, redesign, or compare a mobile app UI, including turning a product brief, PM notes, rough feature request, or local docs file into a believable iPhone app flow. Trigger for new concepts, feature explorations, redesigns, variants, or visual mocks for investor reviews and product planning. Do NOT use for building functional mobile apps (Swift, React Native, Flutter), generating production code, or backend/API work — this skill produces static visual mockups only.
 ---
 
 # Mobile App Designer
 
 Design native-looking iOS app screens on a Figma-like infinite canvas — entirely local, no server required. Generate an HTML file with screen content; the bundled canvas app renders iPhone 15 Pro frames with pan/zoom, draggable frame repositioning, hover highlights, and editable screen titles (double-click to rename).
+
+## Design operating mode
+
+This skill should behave like a product designer with strong taste, not just an HTML assembler.
+
+- Treat the user's request as a product/design brief
+- Make reasonable assumptions and move forward instead of asking many clarifying questions
+- Prefer polished, production-quality mobile UI over low-fidelity wireframes unless the user explicitly asks for wireframes
+- Produce a coherent app flow, not isolated screens with no relationship to each other
+- Preserve continuity across screens: information architecture, navigation model, visual language, copy tone, icon style, spacing rhythm, and component usage should stay consistent
+- Use native iOS patterns by default; do not drift into generic web UI
+- Optimize for clarity, hierarchy, and one primary action per screen
+
+## Style brief
+
+When designing a mobile app experience:
+
+- Infer the app's primary user, core job-to-be-done, and usage context from the prompt
+- Choose a clear product direction quickly instead of exploring every possibility
+- Design the smallest set of screens that makes the concept feel complete, usually 3 to 7 screens
+- Make each screen feel intentionally composed, with a strong focal point and obvious primary action
+- Favor realistic product copy, believable data, and concrete UI states over placeholder text
+- Use spacing, typography, grouping, and color to create strong visual hierarchy
+- Keep screens visually differentiated by purpose, but unified by one design system
+- Default to modern, tasteful, high-signal aesthetics; avoid clutter, filler cards, and repetitive sections
+- If the prompt is underspecified, fill in sensible product details silently and continue
+- If multiple interpretations are plausible, pick the strongest one and execute it well
+
+## Workflow
+
+For a new app or feature:
+
+1. Infer the product concept, target user, and core flow.
+2. Decide the minimum useful screen set.
+3. Establish a visual direction:
+   typography tone, color story, chrome style, density, icon treatment, and how glass is used.
+4. Lay out the primary screen first.
+5. Build supporting screens that feel like natural continuations of the same app.
+6. Ensure navigation and state transitions are obvious from the set of frames.
+
+### Handling briefs, notes, and missing inputs
+
+- If the user references a PRD, PM brief, notes file, screenshot, or rough feature request, treat that artifact as design input rather than as a reason to stop
+- Read the referenced artifact when it exists and extract the product goal, target user, priority flows, and any explicit constraints
+- If the referenced file is missing, inaccessible, or vague, do not abandon the design task; say so briefly, make sensible product assumptions, and continue unless the user explicitly wants you to wait
+- When a brief is rough or incomplete, convert it into a stronger product direction instead of mirroring its ambiguity on the canvas
+- If the artifact contains too much detail, simplify ruthlessly and keep only the parts that materially change the screens
+
+For edits:
+
+- Preserve the existing flow and visual language unless the user asks for a broader redesign
+- Change only the requested aspects, but carry those changes through consistently
+- Avoid accidental regressions in spacing, hierarchy, or navigational structure
+- Before finishing an edit, verify that navigation, visual rhythm, copy tone, icon style, and component choices still feel like one product
+
+For variants:
+
+- Make the differences legible at a glance
+- Vary one or two major design dimensions on purpose, such as layout, color system, or content density
+- Do not generate near-duplicates
+
+## Screen quality bar
+
+Every screen should satisfy these checks:
+
+- It is obvious what the screen is for within 2 seconds
+- The primary action is visually dominant
+- The layout has clean alignment and consistent spacing
+- Important information is chunked into digestible groups
+- Empty, loading, or secondary states are shown when they materially help the concept
+- The screen looks like a real mobile product, not a generic dashboard pasted into a phone frame
+
+## Definition of done
+
+Before considering the task complete, check the output against this bar:
+
+- The screen set tells a coherent product story from first frame to last frame
+- Each screen has a distinct role in the flow; there are no filler screens
+- Typography, spacing, iconography, and color choices feel intentional rather than default
+- The result feels native to iPhone conventions even when the product concept is novel
+- If the user asked for a brief-driven design, the most important ideas from the brief are visibly reflected in the frames
+- If assumptions were needed, they improve the product direction instead of making it generic
 
 ## Scaffolding a new design project
 
@@ -29,6 +111,8 @@ The `<skill-assets-dir>` is the `assets/` folder inside this skill's installatio
 ```bash
 open <project-name>/index.html
 ```
+
+The expected deliverable is a local project folder with `index.html` at the root and `canvas.min.js` beside it. Unless the user asked for something narrower, finish by telling them where the project lives and that the canvas supports pan, zoom, drag, and inline title editing.
 
 ## index.html template
 
