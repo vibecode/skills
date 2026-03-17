@@ -18,7 +18,8 @@
         "./skills/cloudflare-tunnel",
         "./skills/paul-graham-style",
         "./skills/bootstrap-fullstack-web-app",
-        "./skills/mobile-app-designer"
+        "./skills/mobile-app-designer",
+        "./skills/take-the-wheel"
       ]
     }
   ]
