@@ -347,171 +347,114 @@ test_gc_orphaned_state_files() {
 }
 
 # ==================== Real tunnel tests ====================
+# These are grouped into lifecycle tests to minimize tunnel creations
+# and avoid hitting Cloudflare's aggressive rate limits on quick tunnels.
+# Total tunnel creations: ~5 (down from ~15 with individual tests).
 
-test_start_real_tunnel() {
+# Lifecycle 1: Start a single tunnel and exercise all read/query commands
+# against it, then duplicate detection, then stop. (1 tunnel creation)
+test_single_tunnel_lifecycle() {
   start_http_server "$PORT_A"
-  local out
-  out=$(bash "$TUNNEL_SH" start "$PORT_A")
-  assert_contains "$out" "Starting tunnel to http://localhost:${PORT_A}" "start msg" &&
-  assert_contains "$out" "trycloudflare.com" "got URL" &&
-  assert_contains "$out" "Port: ${PORT_A}" "port" &&
-  assert_contains "$out" "Session: cftunnel-${PORT_A}" "session" &&
-  assert_contains "$out" "TTL: 2h" "default ttl"
-}
 
-test_start_real_tunnel_is_reachable() {
-  start_http_server "$PORT_A"
-  local out
-  out=$(bash "$TUNNEL_SH" start "$PORT_A")
+  # --- Start ---
+  local start_out
+  start_out=$(bash "$TUNNEL_SH" start "$PORT_A")
+  assert_contains "$start_out" "Starting tunnel to http://localhost:${PORT_A}" "start msg" &&
+  assert_contains "$start_out" "trycloudflare.com" "got URL" &&
+  assert_contains "$start_out" "Port: ${PORT_A}" "port" &&
+  assert_contains "$start_out" "Session: cftunnel-${PORT_A}" "session" &&
+  assert_contains "$start_out" "TTL: 2h" "default ttl" || return 1
 
-  # Extract the URL
+  # --- Reachable ---
   local url
-  url=$(echo "$out" | grep -oE 'https://[a-zA-Z0-9-]+\.trycloudflare\.com' | head -1)
+  url=$(echo "$start_out" | grep -oE 'https://[a-zA-Z0-9-]+\.trycloudflare\.com' | head -1)
   [[ -n "$url" ]] || { echo "Could not extract URL"; return 1; }
-
-  # Give cloudflare a moment to propagate
   sleep 3
-  assert_url_reachable "$url" "tunnel reachable"
-}
+  assert_url_reachable "$url" "tunnel reachable" || return 1
 
-test_start_with_explicit_ttl() {
-  start_http_server "$PORT_A"
-  local out
-  out=$(bash "$TUNNEL_SH" start "$PORT_A" --ttl 1h)
-  assert_contains "$out" "TTL: 1h" "explicit ttl" &&
-  assert_contains "$out" "trycloudflare.com" "got URL"
-}
+  # --- Tmux session exists ---
+  tmux has-session -t "cftunnel-${PORT_A}" 2>/dev/null || { echo "tmux session not found"; return 1; }
 
-test_start_with_forever_ttl() {
-  start_http_server "$PORT_A"
-  local out
-  out=$(bash "$TUNNEL_SH" start "$PORT_A" --ttl forever)
-  assert_contains "$out" "TTL: forever" "forever ttl" &&
-  assert_contains "$out" "trycloudflare.com" "got URL"
-}
-
-test_start_duplicate_real_tunnel() {
-  start_http_server "$PORT_A"
-  bash "$TUNNEL_SH" start "$PORT_A" > /dev/null 2>&1
-
-  local out
-  out=$(bash "$TUNNEL_SH" start "$PORT_A")
-  assert_contains "$out" "Tunnel already running on port ${PORT_A}" "duplicate warning" &&
-  assert_contains "$out" "URL:" "shows URL" &&
-  assert_contains "$out" "Session:" "shows session"
-}
-
-test_start_multiple_real_tunnels() {
-  start_http_server "$PORT_A"
-  start_http_server "$PORT_B"
-
-  local out1 out2
-  out1=$(bash "$TUNNEL_SH" start "$PORT_A")
-  out2=$(bash "$TUNNEL_SH" start "$PORT_B")
-  assert_contains "$out1" "Port: ${PORT_A}" "first tunnel" &&
-  assert_contains "$out2" "Port: ${PORT_B}" "second tunnel"
-
+  # --- List ---
   local list_out
   list_out=$(bash "$TUNNEL_SH" list)
-  assert_contains "$list_out" "Port ${PORT_A}" "list A" &&
-  assert_contains "$list_out" "Port ${PORT_B}" "list B"
+  assert_contains "$list_out" "Port ${PORT_A}" "list port" &&
+  assert_contains "$list_out" "trycloudflare.com" "list URL" &&
+  assert_contains "$list_out" "Session cftunnel-${PORT_A}" "list session" &&
+  assert_contains "$list_out" "TTL" "list TTL" || return 1
+
+  # --- Status ---
+  local status_out
+  status_out=$(bash "$TUNNEL_SH" status "$PORT_A")
+  assert_contains "$status_out" "Tunnel on port ${PORT_A} is running" "status running" &&
+  assert_contains "$status_out" "PID:" "PID" &&
+  assert_contains "$status_out" "URL:" "URL" &&
+  assert_contains "$status_out" "Session:" "Session" &&
+  assert_contains "$status_out" "TTL:" "TTL" || return 1
+
+  # --- Logs ---
+  local logs_out
+  logs_out=$(bash "$TUNNEL_SH" logs "$PORT_A")
+  assert_contains "$logs_out" "trycloudflare.com" "logs have URL" || return 1
+
+  # --- Duplicate detection ---
+  local dup_out
+  dup_out=$(bash "$TUNNEL_SH" start "$PORT_A")
+  assert_contains "$dup_out" "Tunnel already running on port ${PORT_A}" "duplicate warning" &&
+  assert_contains "$dup_out" "URL:" "shows URL" &&
+  assert_contains "$dup_out" "Session:" "shows session" || return 1
+
+  # --- Stop ---
+  local stop_out
+  stop_out=$(bash "$TUNNEL_SH" stop "$PORT_A")
+  assert_contains "$stop_out" "Stopped tunnel on port ${PORT_A}" "stopped" &&
+  [[ ! -f "${TEST_HOME}/.cloudflare-tunnels/tunnel-${PORT_A}.pid" ]] &&
+  ! tmux has-session -t "cftunnel-${PORT_A}" 2>/dev/null || return 1
 }
 
-test_concurrent_limit() {
-  # TUNNEL_MAX_CONCURRENT=2, so third tunnel should be rejected
+# Lifecycle 2: Multi-tunnel with TTL options and concurrent limit enforcement.
+# (2 tunnel creations + 1 rejected)
+test_multi_tunnel_and_limits() {
   start_http_server "$PORT_A"
   start_http_server "$PORT_B"
   start_http_server "$PORT_C"
 
-  bash "$TUNNEL_SH" start "$PORT_A" > /dev/null 2>&1
-  bash "$TUNNEL_SH" start "$PORT_B" > /dev/null 2>&1
+  # Start two tunnels with different TTLs
+  local out1
+  out1=$(bash "$TUNNEL_SH" start "$PORT_A" --ttl 1h)
+  assert_contains "$out1" "TTL: 1h" "explicit ttl" &&
+  assert_contains "$out1" "trycloudflare.com" "got URL A" || return 1
 
-  local out code=0
-  out=$(bash "$TUNNEL_SH" start "$PORT_C" 2>&1) || code=$?
+  local out2
+  out2=$(bash "$TUNNEL_SH" start "$PORT_B" --ttl forever)
+  assert_contains "$out2" "TTL: forever" "forever ttl" &&
+  assert_contains "$out2" "trycloudflare.com" "got URL B" || return 1
+
+  # List should show both
+  local list_out
+  list_out=$(bash "$TUNNEL_SH" list)
+  assert_contains "$list_out" "Port ${PORT_A}" "list A" &&
+  assert_contains "$list_out" "Port ${PORT_B}" "list B" || return 1
+
+  # Third tunnel should hit concurrent limit (TUNNEL_MAX_CONCURRENT=2)
+  local limit_out code=0
+  limit_out=$(bash "$TUNNEL_SH" start "$PORT_C" 2>&1) || code=$?
   assert_exit_code "$code" "1" &&
-  assert_contains "$out" "Maximum of 2 concurrent tunnels reached" "limit msg" &&
-  assert_contains "$out" "Stop a tunnel first" "stop hint"
-}
+  assert_contains "$limit_out" "Maximum of 2 concurrent tunnels reached" "limit msg" &&
+  assert_contains "$limit_out" "Stop a tunnel first" "stop hint" || return 1
 
-test_tmux_session_exists() {
-  start_http_server "$PORT_A"
-  bash "$TUNNEL_SH" start "$PORT_A" > /dev/null 2>&1
-
-  # Verify the tmux session exists
-  tmux has-session -t "cftunnel-${PORT_A}" 2>/dev/null
-}
-
-test_list_real_active() {
-  start_http_server "$PORT_A"
-  bash "$TUNNEL_SH" start "$PORT_A" > /dev/null 2>&1
-
-  local out
-  out=$(bash "$TUNNEL_SH" list)
-  assert_contains "$out" "Port ${PORT_A}" "list port" &&
-  assert_contains "$out" "trycloudflare.com" "list URL" &&
-  assert_contains "$out" "Session cftunnel-${PORT_A}" "list session" &&
-  assert_contains "$out" "TTL" "list TTL"
-}
-
-test_status_real_running() {
-  start_http_server "$PORT_A"
-  bash "$TUNNEL_SH" start "$PORT_A" > /dev/null 2>&1
-
-  local out
-  out=$(bash "$TUNNEL_SH" status "$PORT_A")
-  assert_contains "$out" "Tunnel on port ${PORT_A} is running" "status running" &&
-  assert_contains "$out" "PID:" "PID" &&
-  assert_contains "$out" "URL:" "URL" &&
-  assert_contains "$out" "Session:" "Session" &&
-  assert_contains "$out" "TTL:" "TTL"
-}
-
-test_stop_real_tunnel() {
-  start_http_server "$PORT_A"
-  bash "$TUNNEL_SH" start "$PORT_A" > /dev/null 2>&1
-
-  local out
-  out=$(bash "$TUNNEL_SH" stop "$PORT_A")
-  assert_contains "$out" "Stopped tunnel on port ${PORT_A}" "stopped" &&
-  [[ ! -f "${TEST_HOME}/.cloudflare-tunnels/tunnel-${PORT_A}.pid" ]] &&
-  ! tmux has-session -t "cftunnel-${PORT_A}" 2>/dev/null
-}
-
-test_stop_all_real_tunnels() {
-  start_http_server "$PORT_A"
-  start_http_server "$PORT_B"
-  bash "$TUNNEL_SH" start "$PORT_A" > /dev/null 2>&1
-  bash "$TUNNEL_SH" start "$PORT_B" > /dev/null 2>&1
-
-  local out
-  out=$(bash "$TUNNEL_SH" stop)
-  assert_contains "$out" "Stopped tunnel on port ${PORT_A}" "stop A" &&
-  assert_contains "$out" "Stopped tunnel on port ${PORT_B}" "stop B" &&
+  # Stop all
+  local stop_out
+  stop_out=$(bash "$TUNNEL_SH" stop)
+  assert_contains "$stop_out" "Stopped tunnel on port ${PORT_A}" "stop A" &&
+  assert_contains "$stop_out" "Stopped tunnel on port ${PORT_B}" "stop B" &&
   ! tmux has-session -t "cftunnel-${PORT_A}" 2>/dev/null &&
-  ! tmux has-session -t "cftunnel-${PORT_B}" 2>/dev/null
+  ! tmux has-session -t "cftunnel-${PORT_B}" 2>/dev/null || return 1
 }
 
-test_stop_then_restart_real() {
-  start_http_server "$PORT_A"
-  bash "$TUNNEL_SH" start "$PORT_A" > /dev/null 2>&1
-  bash "$TUNNEL_SH" stop "$PORT_A" > /dev/null 2>&1
-
-  local out
-  out=$(bash "$TUNNEL_SH" start "$PORT_A")
-  assert_contains "$out" "trycloudflare.com" "restarted" &&
-  assert_not_contains "$out" "already running" "no dup warning"
-}
-
-test_logs_real() {
-  start_http_server "$PORT_A"
-  bash "$TUNNEL_SH" start "$PORT_A" > /dev/null 2>&1
-
-  local out
-  out=$(bash "$TUNNEL_SH" logs "$PORT_A")
-  assert_contains "$out" "trycloudflare.com" "logs have URL"
-}
-
-test_tunnel_url_changes_on_restart() {
+# Lifecycle 3: Stop and restart to verify clean restart and URL change.
+# (2 tunnel creations)
+test_restart_and_url_change() {
   start_http_server "$PORT_A"
 
   # Start and grab URL
@@ -519,25 +462,27 @@ test_tunnel_url_changes_on_restart() {
   out1=$(bash "$TUNNEL_SH" start "$PORT_A")
   local url1
   url1=$(echo "$out1" | grep -oE 'https://[a-zA-Z0-9-]+\.trycloudflare\.com' | head -1)
+  [[ -n "$url1" ]] || { echo "Could not extract URL1"; return 1; }
 
   # Stop
   bash "$TUNNEL_SH" stop "$PORT_A" > /dev/null 2>&1
   sleep 1
 
-  # Start again
+  # Restart — should succeed with no "already running" warning
   local out2
   out2=$(bash "$TUNNEL_SH" start "$PORT_A")
+  assert_contains "$out2" "trycloudflare.com" "restarted" &&
+  assert_not_contains "$out2" "already running" "no dup warning" || return 1
+
   local url2
   url2=$(echo "$out2" | grep -oE 'https://[a-zA-Z0-9-]+\.trycloudflare\.com' | head -1)
+  [[ -n "$url2" ]] || { echo "Could not extract URL2"; return 1; }
 
-  [[ -n "$url1" ]] && [[ -n "$url2" ]] || { echo "Could not extract URLs"; return 1; }
-
-  # URLs should be different (random each time)
+  # URLs should be different (random each time — not a hard failure)
   if [[ "$url1" != "$url2" ]]; then
     return 0
   else
-    echo "URLs were the same: ${url1} — might happen rarely but is unexpected"
-    # Not a hard failure since there's a tiny chance of collision
+    echo "URLs were the same: ${url1} — might happen rarely but unexpected"
     return 0
   fi
 }
@@ -582,22 +527,10 @@ run_test "gc orphaned tmux session"            test_gc_orphaned_tmux_session
 run_test "gc orphaned state files"             test_gc_orphaned_state_files
 
 echo ""
-echo "--- Real tunnel operations (slower) ---"
-run_test "start real tunnel"                   test_start_real_tunnel
-run_test "tunnel is reachable via URL"         test_start_real_tunnel_is_reachable
-run_test "start with explicit TTL"             test_start_with_explicit_ttl
-run_test "start with forever TTL"              test_start_with_forever_ttl
-run_test "start duplicate (warns)"             test_start_duplicate_real_tunnel
-run_test "start multiple tunnels"              test_start_multiple_real_tunnels
-run_test "concurrent limit enforced"           test_concurrent_limit
-run_test "tmux session exists"                 test_tmux_session_exists
-run_test "list active tunnels"                 test_list_real_active
-run_test "status running tunnel"               test_status_real_running
-run_test "stop specific tunnel"                test_stop_real_tunnel
-run_test "stop all tunnels"                    test_stop_all_real_tunnels
-run_test "stop then restart same port"         test_stop_then_restart_real
-run_test "logs show tunnel output"             test_logs_real
-run_test "URL changes on restart"              test_tunnel_url_changes_on_restart
+echo "--- Real tunnel operations (slower, grouped to avoid rate limits) ---"
+run_test "single tunnel lifecycle"             test_single_tunnel_lifecycle
+run_test "multi-tunnel + TTL + limits"         test_multi_tunnel_and_limits
+run_test "restart and URL change"              test_restart_and_url_change
 
 echo ""
 echo "========================================="
