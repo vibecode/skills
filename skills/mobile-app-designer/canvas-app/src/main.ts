@@ -18,15 +18,6 @@ declare global {
     lucide?: {
       createIcons: (options?: { attrs?: Record<string, string> }) => void;
     };
-    mobileAppDesignerHost?: {
-      regenerateScreen?: (payload: {
-        screenId: string;
-        title: string;
-        prompt?: string;
-        sourceHtml: string;
-        screenHtml: string;
-      }) => string | void | Promise<string | void>;
-    };
   }
 }
 
@@ -112,16 +103,6 @@ function getSerializedHtml(frames: PhoneFrame[]): string {
   return `<!DOCTYPE html>\n${doc.documentElement.outerHTML}`;
 }
 
-async function copyToClipboard(text: string): Promise<boolean> {
-  if (!navigator.clipboard?.writeText) return false;
-  try {
-    await navigator.clipboard.writeText(text);
-    return true;
-  } catch {
-    return false;
-  }
-}
-
 async function exportFramePng(frame: PhoneFrame): Promise<void> {
   const dataUrl = await toPng(frame.getExportElement(), {
     cacheBust: true,
@@ -131,31 +112,6 @@ async function exportFramePng(frame: PhoneFrame): Promise<void> {
   const response = await fetch(dataUrl);
   const blob = await response.blob();
   downloadBlob(blob, `${slugify(frame.getTitle())}.png`);
-}
-
-async function triggerScreenRegeneration(frame: PhoneFrame, frames: PhoneFrame[], prompt?: string): Promise<string> {
-  const template = document.getElementById(`screen-${frame.getScreenId()}`) as HTMLTemplateElement | null;
-  const payload = {
-    screenId: frame.getScreenId(),
-    title: frame.getTitle(),
-    prompt,
-    sourceHtml: getSerializedHtml(frames),
-    screenHtml: template?.innerHTML || "",
-  };
-
-  if (window.mobileAppDesignerHost?.regenerateScreen) {
-    const message = await window.mobileAppDesignerHost.regenerateScreen(payload);
-    return message || "Queued regeneration";
-  }
-
-  window.dispatchEvent(
-    new CustomEvent("mobile-app-designer:regenerate-screen", {
-      detail: payload,
-    }),
-  );
-
-  const copied = await copyToClipboard(JSON.stringify(payload, null, 2));
-  return copied ? "Copied regeneration payload" : "Fired regeneration event";
 }
 
 function init(): void {
@@ -197,8 +153,6 @@ function init(): void {
       onExportPng: async () => {
         await exportFramePng(frame);
       },
-      onRegenerate: () => triggerScreenRegeneration(frame, frames),
-      onRegenerateWithPrompt: (prompt) => triggerScreenRegeneration(frame, frames, prompt),
     });
 
     canvas.addFrame(frame);

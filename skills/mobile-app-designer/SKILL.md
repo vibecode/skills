@@ -265,7 +265,6 @@ The canvas supports Figma-like interactions out of the box:
 - **Rename**: Edit the screen title directly from the frame menu
 - **Export HTML**: Export the current design HTML from the selected frame menu
 - **Export PNG**: Export the selected screen as a PNG from that frame menu
-- **Regenerate hooks**: The frame menu exposes re-run actions for one-screen regeneration flows when a host integrates with the canvas
 
 Inform the user about these interactions when opening a design for the first time.
 

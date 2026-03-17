@@ -185,8 +185,6 @@ function createPromptInput(placeholder: string): HTMLInputElement {
 export interface PhoneFrameMenuHandlers {
   onExportHtml?: () => string | void | Promise<string | void>;
   onExportPng?: () => string | void | Promise<string | void>;
-  onRegenerate?: () => string | void | Promise<string | void>;
-  onRegenerateWithPrompt?: (prompt: string) => string | void | Promise<string | void>;
   onTitleChange?: (title: string) => void;
 }
 
@@ -197,7 +195,6 @@ export class PhoneFrame {
   private readonly contentEl: HTMLDivElement;
   private readonly titleButtonEl: HTMLButtonElement;
   private readonly titleInputEl: HTMLInputElement;
-  private readonly promptInputEl: HTMLInputElement;
   private readonly statusTextEl: HTMLDivElement;
   private readonly statusBarEl: HTMLDivElement;
   private readonly homeIndicatorEl: HTMLDivElement;
@@ -286,37 +283,7 @@ export class PhoneFrame {
       void this.runMenuAction(() => this.menuHandlers.onExportPng?.(), "Saved PNG");
     });
 
-    const rerunButton = createActionButton("Re-run");
-    rerunButton.addEventListener("click", () => {
-      void this.runMenuAction(() => this.menuHandlers.onRegenerate?.(), "Queued regeneration");
-    });
-
-    menuActionRow.append(exportHtmlButton, exportPngButton, rerunButton);
-
-    const promptRow = document.createElement("div");
-    promptRow.style.cssText = `
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    `;
-
-    this.promptInputEl = createPromptInput("Prompt to regenerate just this screen");
-    this.promptInputEl.addEventListener("focus", () => {
-      this.onSelect(this);
-    });
-    this.promptInputEl.addEventListener("keydown", (event) => {
-      if (event.key === "Enter") {
-        event.preventDefault();
-        void this.runPromptAction();
-      }
-    });
-
-    const promptButton = createActionButton("Run Prompt");
-    promptButton.addEventListener("click", () => {
-      void this.runPromptAction();
-    });
-
-    promptRow.append(this.promptInputEl, promptButton);
+    menuActionRow.append(exportHtmlButton, exportPngButton);
 
     this.statusTextEl = document.createElement("div");
     this.statusTextEl.dataset.exportIgnore = "true";
@@ -327,7 +294,7 @@ export class PhoneFrame {
       letter-spacing: -0.01em;
     `;
 
-    this.menuEl.append(this.titleInputEl, menuActionRow, promptRow, this.statusTextEl);
+    this.menuEl.append(this.titleInputEl, menuActionRow, this.statusTextEl);
     this.el.appendChild(this.menuEl);
 
     this.shellEl = document.createElement("div");
@@ -540,18 +507,6 @@ export class PhoneFrame {
       this.titleInputEl.focus();
       this.titleInputEl.select();
     });
-  }
-
-  private async runPromptAction(): Promise<void> {
-    const prompt = this.promptInputEl.value.trim();
-    if (!prompt) {
-      this.setStatus("Add a prompt first.");
-      return;
-    }
-    await this.runMenuAction(
-      () => this.menuHandlers.onRegenerateWithPrompt?.(prompt),
-      "Queued regeneration prompt",
-    );
   }
 
   private async runMenuAction(
