@@ -2017,7 +2017,9 @@
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  width: 100%;
+  align-self: center;
+  width: calc(100% - 32px);
+  max-width: calc(100% - 32px);
   min-height: 220px;
   border-radius: 26px;
   background: var(--ios-bg-secondary);

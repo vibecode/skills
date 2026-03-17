@@ -2,7 +2,11 @@ const MAPLIBRE_SCRIPT_URL = "https://unpkg.com/maplibre-gl@^5.12.0/dist/maplibre
 const MAPLIBRE_STYLESHEET_URL = "https://unpkg.com/maplibre-gl@^5.12.0/dist/maplibre-gl.css";
 const OPEN_FREE_MAP_STYLE_URL = "https://tiles.openfreemap.org/styles/liberty";
 const OPEN_FREE_MAP_ATTRIBUTION = "OpenFreeMap © OpenMapTiles Data from OpenStreetMap";
-const OSM_TILE_URL = "https://tile.openstreetmap.org";
+const OSM_TILE_HOSTS = [
+  "https://a.tile.openstreetmap.org",
+  "https://b.tile.openstreetmap.org",
+  "https://c.tile.openstreetmap.org",
+];
 const OSM_ATTRIBUTION = "© OpenStreetMap contributors";
 const TILE_SIZE = 256;
 
@@ -84,6 +88,11 @@ function lngLatToPixels(lng: number, lat: number, zoom: number): { x: number; y:
   return { x, y };
 }
 
+function getOsmTileUrl(zoom: number, tileX: number, tileY: number, attempt = 0): string {
+  const host = OSM_TILE_HOSTS[((tileX + tileY + attempt) % OSM_TILE_HOSTS.length + OSM_TILE_HOSTS.length) % OSM_TILE_HOSTS.length];
+  return `${host}/${zoom}/${tileX}/${tileY}.png`;
+}
+
 function renderRasterFallback(
   mapRoot: HTMLElement,
   surface: HTMLDivElement,
@@ -115,7 +124,8 @@ function renderRasterFallback(
       img.alt = "";
       img.loading = "eager";
       img.decoding = "async";
-      img.src = `${OSM_TILE_URL}/${zoom}/${wrappedX}/${tileY}.png`;
+      img.referrerPolicy = "no-referrer";
+      img.src = getOsmTileUrl(zoom, wrappedX, tileY, 0);
       img.style.cssText = `
         position: absolute;
         left: ${tileX * TILE_SIZE - left}px;
@@ -123,7 +133,21 @@ function renderRasterFallback(
         width: ${TILE_SIZE}px;
         height: ${TILE_SIZE}px;
         object-fit: cover;
+        display: block;
+        background: #dfe6ec;
       `;
+      img.dataset.retryCount = "0";
+      img.addEventListener("error", () => {
+        const retryCount = Number.parseInt(img.dataset.retryCount || "0", 10);
+        if (retryCount < OSM_TILE_HOSTS.length - 1) {
+          const nextRetry = retryCount + 1;
+          img.dataset.retryCount = String(nextRetry);
+          img.src = getOsmTileUrl(zoom, wrappedX, tileY, nextRetry);
+          return;
+        }
+        img.removeAttribute("src");
+        img.style.visibility = "hidden";
+      });
       fragment.appendChild(img);
     }
   }

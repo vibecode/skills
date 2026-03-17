@@ -4,6 +4,8 @@ const BORDER_RADIUS = 47.33;
 const BEZEL_WIDTH = 4;
 const DYNAMIC_ISLAND_WIDTH = 126;
 const DYNAMIC_ISLAND_HEIGHT = 37;
+const STATUS_BAR_HEIGHT = 54;
+const SVG_NS = "http://www.w3.org/2000/svg";
 
 function createActionButton(label: string): HTMLButtonElement {
   const button = document.createElement("button");
@@ -25,49 +27,138 @@ function createActionButton(label: string): HTMLButtonElement {
   return button;
 }
 
-function createIndicatorBar(width: number, opacity = 1): HTMLSpanElement {
-  const bar = document.createElement("span");
-  bar.style.cssText = `
-    width: ${width}px;
-    height: 4px;
-    border-radius: 999px;
-    background: currentColor;
-    opacity: ${opacity};
-    display: inline-block;
+function createStatusSvg(viewBox: string, width: number, height: number): SVGSVGElement {
+  const svg = document.createElementNS(SVG_NS, "svg");
+  svg.setAttribute("viewBox", viewBox);
+  svg.setAttribute("width", String(width));
+  svg.setAttribute("height", String(height));
+  svg.setAttribute("aria-hidden", "true");
+  svg.style.cssText = `
+    display: block;
+    overflow: visible;
+    color: currentColor;
+    flex: none;
   `;
-  return bar;
+  return svg;
 }
 
-function createWifiGlyph(): HTMLSpanElement {
-  const wifi = document.createElement("span");
-  wifi.style.cssText = `
-    position: relative;
-    width: 14px;
-    height: 10px;
-    display: inline-block;
-  `;
-
-  [12, 8, 4].forEach((size, index) => {
-    const arc = document.createElement("span");
-    arc.style.cssText = `
-      position: absolute;
-      left: 50%;
-      bottom: 0;
-      width: ${size}px;
-      height: ${size}px;
-      border: 1.6px solid currentColor;
-      border-bottom: none;
-      border-left-color: transparent;
-      border-right-color: transparent;
-      border-top-left-radius: ${size}px;
-      border-top-right-radius: ${size}px;
-      transform: translateX(-50%);
-      opacity: ${0.55 + index * 0.2};
-    `;
-    wifi.appendChild(arc);
+function createSvgElement<T extends keyof SVGElementTagNameMap>(
+  tag: T,
+  attrs: Record<string, string>,
+): SVGElementTagNameMap[T] {
+  const el = document.createElementNS(SVG_NS, tag);
+  Object.entries(attrs).forEach(([key, value]) => {
+    el.setAttribute(key, value);
   });
+  return el;
+}
 
-  return wifi;
+function createSignalGlyph(): SVGSVGElement {
+  const svg = createStatusSvg("0 0 18 12", 17, 11);
+  svg.append(
+    createSvgElement("circle", {
+      cx: "1.9",
+      cy: "9.2",
+      r: "1.5",
+      fill: "currentColor",
+      opacity: "0.28",
+    }),
+    createSvgElement("rect", {
+      x: "5.3",
+      y: "5.9",
+      width: "2.7",
+      height: "5.8",
+      rx: "1.35",
+      fill: "currentColor",
+      opacity: "0.42",
+    }),
+    createSvgElement("rect", {
+      x: "9.4",
+      y: "3.3",
+      width: "2.7",
+      height: "8.4",
+      rx: "1.35",
+      fill: "currentColor",
+      opacity: "0.7",
+    }),
+    createSvgElement("rect", {
+      x: "13.5",
+      y: "0.9",
+      width: "2.7",
+      height: "10.8",
+      rx: "1.35",
+      fill: "currentColor",
+    }),
+  );
+
+  return svg;
+}
+
+function createWifiGlyph(): SVGSVGElement {
+  const svg = createStatusSvg("0 0 16 12", 15, 11);
+  svg.append(
+    createSvgElement("path", {
+      d: "M1.7 4.1C4.8 1.45 11.2 1.45 14.3 4.1",
+      fill: "none",
+      stroke: "currentColor",
+      "stroke-width": "1.55",
+      "stroke-linecap": "round",
+    }),
+    createSvgElement("path", {
+      d: "M4.35 6.95C6.15 5.45 9.85 5.45 11.65 6.95",
+      fill: "none",
+      stroke: "currentColor",
+      "stroke-width": "1.55",
+      "stroke-linecap": "round",
+    }),
+    createSvgElement("path", {
+      d: "M6.85 9.35C7.45 8.85 8.55 8.85 9.15 9.35",
+      fill: "none",
+      stroke: "currentColor",
+      "stroke-width": "1.55",
+      "stroke-linecap": "round",
+    }),
+    createSvgElement("circle", {
+      cx: "8",
+      cy: "10.15",
+      r: "1.15",
+      fill: "currentColor",
+    }),
+  );
+  return svg;
+}
+
+function createBatteryGlyph(): SVGSVGElement {
+  const svg = createStatusSvg("0 0 26 14", 24, 12);
+  svg.append(
+    createSvgElement("rect", {
+      x: "1",
+      y: "2.1",
+      width: "21",
+      height: "9.8",
+      rx: "3.4",
+      fill: "none",
+      stroke: "currentColor",
+      "stroke-width": "1.55",
+    }),
+    createSvgElement("rect", {
+      x: "3.25",
+      y: "4.25",
+      width: "12.4",
+      height: "5.5",
+      rx: "1.9",
+      fill: "currentColor",
+    }),
+    createSvgElement("rect", {
+      x: "23.2",
+      y: "5.1",
+      width: "1.9",
+      height: "3.8",
+      rx: "0.95",
+      fill: "currentColor",
+    }),
+  );
+  return svg;
 }
 
 function createPromptInput(placeholder: string): HTMLInputElement {
@@ -318,74 +409,37 @@ export class PhoneFrame {
       top: 0;
       left: 0;
       right: 0;
-      z-index: 14;
+      height: ${STATUS_BAR_HEIGHT}px;
+      z-index: 16;
       pointer-events: none;
-      padding: 14px 28px 0;
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
       color: #050505;
-      font: 700 15px/1 -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
-      letter-spacing: -0.02em;
+      font: 700 16px/1 -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+      letter-spacing: -0.03em;
     `;
 
     const timeEl = document.createElement("span");
     timeEl.textContent = "9:41";
+    timeEl.style.cssText = `
+      position: absolute;
+      left: 34px;
+      top: 19px;
+      min-width: 54px;
+      text-align: left;
+    `;
 
     const indicatorCluster = document.createElement("div");
     indicatorCluster.style.cssText = `
+      position: absolute;
+      right: 30px;
+      top: 20px;
       display: flex;
       align-items: center;
       gap: 6px;
-      padding-top: 1px;
     `;
 
-    const signal = document.createElement("span");
-    signal.style.cssText = `
-      display: inline-flex;
-      align-items: flex-end;
-      gap: 2px;
-      height: 12px;
-    `;
-    signal.append(
-      createIndicatorBar(3, 0.45),
-      createIndicatorBar(3, 0.62),
-      createIndicatorBar(3, 0.8),
-      createIndicatorBar(3, 1),
-    );
-
+    const signal = createSignalGlyph();
     const wifi = createWifiGlyph();
-
-    const battery = document.createElement("span");
-    battery.style.cssText = `
-      position: relative;
-      display: inline-flex;
-      align-items: center;
-      width: 24px;
-      height: 12px;
-      border-radius: 4px;
-      border: 1.8px solid currentColor;
-      padding: 1px;
-    `;
-    const batteryLevel = document.createElement("span");
-    batteryLevel.style.cssText = `
-      width: 16px;
-      height: 100%;
-      border-radius: 2px;
-      background: currentColor;
-      display: block;
-    `;
-    const batteryCap = document.createElement("span");
-    batteryCap.style.cssText = `
-      position: absolute;
-      right: -3px;
-      top: 3px;
-      width: 2px;
-      height: 6px;
-      border-radius: 0 2px 2px 0;
-      background: currentColor;
-    `;
-    battery.append(batteryLevel, batteryCap);
+    const battery = createBatteryGlyph();
 
     indicatorCluster.append(signal, wifi, battery);
     this.statusBarEl.append(timeEl, indicatorCluster);
@@ -400,7 +454,7 @@ export class PhoneFrame {
       height: ${DYNAMIC_ISLAND_HEIGHT}px;
       background: #000;
       border-radius: 20px;
-      z-index: 15;
+      z-index: 17;
     `;
 
     this.contentEl = document.createElement("div");
