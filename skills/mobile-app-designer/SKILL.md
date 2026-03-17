@@ -5,7 +5,7 @@ description: Design mobile app screens on a Figma-like interactive canvas with i
 
 # Mobile App Designer
 
-Design native-looking iOS app screens on a Figma-like infinite canvas — entirely local, no server required. Generate an HTML file with screen content; the bundled canvas app renders iPhone 15 Pro frames with pan/zoom, draggable frame repositioning, hover highlights, and editable screen titles (double-click to rename).
+Design native-looking iOS app screens on a Figma-like infinite canvas — entirely local, no server required. Generate an HTML file with screen content; the bundled canvas app renders iPhone 15 Pro frames with an always-visible status bar and home indicator, a zoom HUD, draggable frame repositioning, and a per-screen action menu for rename, export, and regeneration hooks.
 
 ## Design operating mode
 
@@ -18,6 +18,7 @@ This skill should behave like a product designer with strong taste, not just an 
 - Preserve continuity across screens: information architecture, navigation model, visual language, copy tone, icon style, spacing rhythm, and component usage should stay consistent
 - Use native iOS patterns by default; do not drift into generic web UI
 - Optimize for clarity, hierarchy, and one primary action per screen
+- Use Lucide icons consistently for interface iconography; do not use emoji as UI icons
 
 ## Style brief
 
@@ -33,6 +34,14 @@ When designing a mobile app experience:
 - Default to modern, tasteful, high-signal aesthetics; avoid clutter, filler cards, and repetitive sections
 - If the prompt is underspecified, fill in sensible product details silently and continue
 - If multiple interpretations are plausible, pick the strongest one and execute it well
+
+## Assets, maps, and external requirements
+
+- When the concept needs generated visual assets such as product imagery, avatars, or rich visual placeholders, use Nanobana rather than generic emoji stand-ins
+- Treat `NANOBANA_API_KEY` as a required prerequisite for high-fidelity asset generation workflows
+- If `NANOBANA_API_KEY` is unavailable, continue with clean vector or gradient placeholders, but say briefly that richer generated assets were unavailable
+- For location-based products, use the built-in real map component in this skill instead of leaving map areas blank, drawing arbitrary white boxes, or sketching fake roads by hand
+- The shipped canvas initializes `.ios-map` via MapLibre + OpenFreeMap when `data-map-center` is present, so design around a real map surface and overlay UI on top of it
 
 ## Workflow
 
@@ -88,6 +97,9 @@ Before considering the task complete, check the output against this bar:
 - The result feels native to iPhone conventions even when the product concept is novel
 - If the user asked for a brief-driven design, the most important ideas from the brief are visibly reflected in the frames
 - If assumptions were needed, they improve the product direction instead of making it generic
+- If a flow uses a tab bar, every top-level destination screen in that flow renders the same tab bar with the correct active state
+- If the concept uses a branded accent color, primary buttons, active tabs, toggles, selected pills, and active map pins all use that same accent family instead of mixing in default iOS blue
+- Screen backgrounds are owned by the screen layout itself rather than being accidentally created by list/search helper classes
 
 ## Scaffolding a new design project
 
@@ -112,7 +124,7 @@ The `<skill-assets-dir>` is the `assets/` folder inside this skill's installatio
 open <project-name>/index.html
 ```
 
-The expected deliverable is a local project folder with `index.html` at the root and `canvas.min.js` beside it. Unless the user asked for something narrower, finish by telling them where the project lives and that the canvas supports pan, zoom, drag, and inline title editing.
+The expected deliverable is a local project folder with `index.html` at the root and `canvas.min.js` beside it. Unless the user asked for something narrower, finish by telling them where the project lives and that the canvas supports pan, zoom, drag, frame title menus, HTML export, and per-screen PNG export.
 
 ## index.html template
 
@@ -124,6 +136,7 @@ The expected deliverable is a local project folder with `index.html` at the root
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>APP_NAME — Design</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
   <!-- Manifest: lists all screens -->
@@ -175,11 +188,11 @@ Each screen is a `<template id="screen-{id}">` tag. The template content is inje
   <!-- Tab bar (if needed) -->
   <div class="ios-tab-bar" style="position:absolute;bottom:0;left:0;right:0;">
     <a class="ios-tab-bar-item ios-tab-bar-item-active">
-      <span class="ios-tab-bar-icon">🏠</span>
+      <i data-lucide="house" class="ios-tab-bar-icon ios-icon-sm"></i>
       <span>Home</span>
     </a>
     <a class="ios-tab-bar-item">
-      <span class="ios-tab-bar-icon">⚙️</span>
+      <i data-lucide="settings-2" class="ios-tab-bar-icon ios-icon-sm"></i>
       <span>Settings</span>
     </a>
   </div>
@@ -190,11 +203,13 @@ Each screen is a `<template id="screen-{id}">` tag. The template content is inje
 
 ### Key rules
 
-- Always include `.ios-safe-area-top` (59px) at the top — the Dynamic Island is rendered by the frame
-- Include `.ios-safe-area-bottom` (34px) at the bottom for the home indicator
+- Always include `.ios-safe-area-top` (59px) at the top — the frame renders the status bar and Dynamic Island above your content
+- Include `.ios-safe-area-bottom` (34px) at the bottom — the frame renders the home indicator separately, and this spacer preserves layout clearance
 - Use iOS component classes for native appearance (see Component Reference below)
 - Use Tailwind utilities for layout: `flex`, `gap-*`, `p-*`, `mt-*`, etc.
-- Use emoji or inline SVG for icons
+- Use Lucide icons only for UI iconography via `data-lucide="..."`; do not use emoji as interface icons
+- The shipped canvas auto-hydrates Lucide icons, so include the Lucide script tag in `index.html`
+- Put background ownership on a screen wrapper or major surface container; do not rely on `.ios-list` or `.ios-search-bar` to paint the whole screen
 - The viewport is 393×852px — do not set width/height on the template root
 
 ### Positioning tab bars
@@ -209,23 +224,48 @@ When a screen has a tab bar, add bottom padding to the content area so it doesn'
 <div class="flex flex-col" style="padding-bottom:83px;">
 ```
 
+If a product's primary information architecture uses a tab bar, include that tab bar on every top-level destination screen in the set, not just the first screen.
+
+Do not render one top-level screen with a tab bar and sibling destination screens without it. If the app has top-level tabs, repeat the same tab bar on each destination and change only the active item.
+
+### Accent consistency
+
+If the concept needs a non-blue accent, set it once on the screen wrapper and reuse it across every related screen:
+
+```html
+<div
+  class="flex min-h-full flex-col"
+  style="--ios-accent:#c89b64;--ios-accent-rgb:200,155,100;background:var(--ios-bg);"
+>
+```
+
+Rules:
+
+- Use the same accent on every screen in the same flow unless there is a real semantic reason not to
+- Do not leave the tab bar, active states, or toggles on default blue when the rest of the concept uses a branded warm, green, gold, or red accent
+- Keep semantic colors semantic: destructive stays red, success can stay green, but primary interaction states should share the chosen accent
+
 ### Using Liquid Glass
 
 Add `.ios-glass` to any container for a translucent blurred surface. Combine with size variants (`.ios-glass-sm`, `.ios-glass-md`, `.ios-glass-lg`) for preset blur, padding, and border-radius. Use `.ios-btn-glass` / `.ios-btn-glass-primary` for glass-style buttons.
 
 ### Dark mode
 
-Add `data-theme="dark"` to the `.ios-screen` element. All color tokens switch to their dark-mode values automatically.
+Add `data-theme="dark"` to the `<template>` tag. The canvas applies that theme to the injected `.ios-screen` automatically.
 
 ## Canvas interactions
 
 The canvas supports Figma-like interactions out of the box:
 
 - **Pan**: Click and drag on the background, or two-finger swipe
-- **Zoom**: Pinch-to-zoom or Ctrl/Cmd+scroll
+- **Zoom**: Pinch-to-zoom, Ctrl/Cmd+scroll, or the top-right zoom HUD
 - **Hover**: Frames show a blue highlight border on hover
 - **Drag frames**: Click and drag a frame's bezel to reposition it on the canvas
-- **Rename**: Double-click a frame's title to edit it inline
+- **Frame menu**: Click a frame or its title chip to open the menu above that frame
+- **Rename**: Edit the screen title directly from the frame menu
+- **Export HTML**: Export the current design HTML from the selected frame menu
+- **Export PNG**: Export the selected screen as a PNG from that frame menu
+- **Regenerate hooks**: The frame menu exposes re-run actions for one-screen regeneration flows when a host integrates with the canvas
 
 Inform the user about these interactions when opening a design for the first time.
 
@@ -255,10 +295,13 @@ When editing an existing screen, modify its `<template>` content. No manifest ch
 | Alert | `.ios-alert`, `.ios-alert-actions`, `.ios-alert-action` |
 | Badge | `.ios-badge` |
 | Progress | `.ios-progress`, `.ios-progress-bar` |
+| Map | `.ios-map`, `.ios-map-pin`, `.ios-map-card`, `.ios-map-chip`, `.ios-map-fab` |
 | Spinner | `.ios-spinner` |
 | Typography | `.ios-title-large`, `.ios-title`, `.ios-headline`, `.ios-body`, `.ios-caption`, `.ios-footnote` |
 | Colors | `.ios-blue`, `.ios-green`, `.ios-red`, `.ios-cyan`, `.ios-mint`, `.ios-brown`, `.ios-bg-blue`, `.ios-bg-secondary`, `.ios-bg-cyan`, `.ios-bg-mint`, `.ios-bg-brown`, etc. |
 | Separator | `.ios-separator` |
+
+For branded primary states, also use the shared CSS variables `--ios-accent` and `--ios-accent-rgb` on the screen wrapper.
 
 For full HTML examples of every component, read the reference file at `references/ios-components.md` in this skill's directory.
 
@@ -272,6 +315,7 @@ For full HTML examples of every component, read the reference file at `reference
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Todo App — Design</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
   <script id="manifest" type="application/json">
@@ -288,7 +332,7 @@ For full HTML examples of every component, read the reference file at `reference
     <div class="ios-nav-bar">
       <span class="ios-btn-plain ios-blue">Edit</span>
       <span></span>
-      <span class="ios-btn-plain ios-blue">＋</span>
+      <span class="ios-btn-plain ios-blue"><i data-lucide="plus" class="ios-icon-sm"></i></span>
     </div>
     <div class="ios-nav-bar-large">
       <span class="ios-title-large">Tasks</span>
@@ -300,20 +344,20 @@ For full HTML examples of every component, read the reference file at `reference
       <div class="ios-list-header">TODAY</div>
       <div class="ios-list-group">
         <div class="ios-list-cell">
-          <span style="margin-right:12px;font-size:20px;">☑️</span>
+          <i data-lucide="circle-check-big" class="ios-icon" style="margin-right:12px;color:var(--ios-green);"></i>
           <div>
             <p class="ios-body" style="text-decoration:line-through;color:var(--ios-label-secondary);">Buy groceries</p>
           </div>
         </div>
         <div class="ios-list-cell">
-          <span style="margin-right:12px;font-size:20px;">⬜</span>
+          <i data-lucide="circle" class="ios-icon" style="margin-right:12px;color:var(--ios-label-tertiary);"></i>
           <div>
             <p class="ios-body">Review pull requests</p>
             <p class="ios-caption ios-label-secondary">Due by 5:00 PM</p>
           </div>
         </div>
         <div class="ios-list-cell">
-          <span style="margin-right:12px;font-size:20px;">⬜</span>
+          <i data-lucide="circle" class="ios-icon" style="margin-right:12px;color:var(--ios-label-tertiary);"></i>
           <div>
             <p class="ios-body">Call dentist</p>
             <p class="ios-caption ios-label-secondary">High priority</p>
@@ -323,7 +367,7 @@ For full HTML examples of every component, read the reference file at `reference
       <div class="ios-list-header">TOMORROW</div>
       <div class="ios-list-group">
         <div class="ios-list-cell">
-          <span style="margin-right:12px;font-size:20px;">⬜</span>
+          <i data-lucide="circle" class="ios-icon" style="margin-right:12px;color:var(--ios-label-tertiary);"></i>
           <div>
             <p class="ios-body">Team standup</p>
             <p class="ios-caption ios-label-secondary">9:00 AM</p>
@@ -333,15 +377,15 @@ For full HTML examples of every component, read the reference file at `reference
     </div>
     <div class="ios-tab-bar" style="position:absolute;bottom:0;left:0;right:0;">
       <a class="ios-tab-bar-item ios-tab-bar-item-active">
-        <span class="ios-tab-bar-icon">📋</span>
+        <i data-lucide="list-todo" class="ios-tab-bar-icon ios-icon-sm"></i>
         <span>Tasks</span>
       </a>
       <a class="ios-tab-bar-item">
-        <span class="ios-tab-bar-icon">📅</span>
+        <i data-lucide="calendar-days" class="ios-tab-bar-icon ios-icon-sm"></i>
         <span>Calendar</span>
       </a>
       <a class="ios-tab-bar-item">
-        <span class="ios-tab-bar-icon">⚙️</span>
+        <i data-lucide="settings-2" class="ios-tab-bar-icon ios-icon-sm"></i>
         <span>Settings</span>
       </a>
     </div>
@@ -361,21 +405,21 @@ For full HTML examples of every component, read the reference file at `reference
       <div class="ios-list ios-list-inset" style="padding:0;">
         <div class="ios-list-group">
           <div class="ios-list-cell">
-            <div class="ios-list-cell-icon ios-bg-red">📅</div>
+            <div class="ios-list-cell-icon ios-bg-red"><i data-lucide="calendar-days" class="ios-icon-sm" style="color:white;"></i></div>
             <div class="ios-list-cell-detail">
               <span>Date</span>
               <span class="ios-list-cell-value">Today</span>
             </div>
           </div>
           <div class="ios-list-cell">
-            <div class="ios-list-cell-icon ios-bg-orange">🔔</div>
+            <div class="ios-list-cell-icon ios-bg-orange"><i data-lucide="bell" class="ios-icon-sm" style="color:white;"></i></div>
             <div class="ios-list-cell-detail">
               <span>Reminder</span>
               <span class="ios-list-cell-value">None</span>
             </div>
           </div>
           <div class="ios-list-cell">
-            <div class="ios-list-cell-icon ios-bg-blue">🏷️</div>
+            <div class="ios-list-cell-icon ios-bg-blue"><i data-lucide="tag" class="ios-icon-sm" style="color:white;"></i></div>
             <div class="ios-list-cell-detail">
               <span>Priority</span>
               <span class="ios-list-cell-value">Medium</span>
@@ -392,5 +436,3 @@ For full HTML examples of every component, read the reference file at `reference
 </body>
 </html>
 ```
-
----
